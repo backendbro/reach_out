@@ -1,0 +1,18 @@
+extends layouts/login-layout.pug
+
+block content
+    .wrapper
+        form.form-signin(action="/register", method="POST")
+            div.errorMessage #{errorMessage}
+            h2.form-signin-heading Register
+            input.form-control(type='text', name='full_name', placeholder='full-name', required='', autofocus='' value=full_name)
+            
+            input.form-control(type='email', name='email', placeholder='email address', required='' value=email)
+
+            input.form-control(type='username', name='username', placeholder='username', required='' value=username)
+        
+            input#password.form-control(type='password', name='password', placeholder='password', required='')
+
+            input#confirmPass.form-control(type='password', name='password2', placeholder='confirm password', required='')
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Register
+            a#link(href="/login") Already have an account? Login here  

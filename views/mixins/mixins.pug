@@ -1,0 +1,12 @@
+mixin createUserPostForm(userLoggedIn)
+    .postFormContainer
+        .userImageContainer
+            img(src=userLoggedIn.profilePic, alt="User's profile picture")
+        .textareaContainer
+            textarea#postTextarea(placeholder="What's happening?" maxlength="200")
+            .fileUploadContainer
+                input#postFile(type="file", name="")
+                img.click
+            .buttonsContainer    
+                button#submitPostButton(disabled="") Post    
+

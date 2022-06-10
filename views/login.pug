@@ -1,0 +1,13 @@
+extends layouts/login-layout.pug
+
+block content
+    .wrapper
+        form.form-signin(action="/login" method="POST")
+            p.errorMessage #{errorMessage}
+            h2.form-signin-heading Login
+            input.form-control(type='text', name='username', placeholder='email or username', required="", autofocus='' value='bootygangpastor')
+            
+            input.form-control(type='password', name='password', placeholder='password', required="" value="pass")
+            
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Login
+            a#link(href="/register") Need an account? Register here  
