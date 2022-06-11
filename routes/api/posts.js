@@ -4,14 +4,16 @@ const Post = require('../../schemas/PostSchema');
 const upload = require('../../multer/upload')
 const Cloudinary = require('../../cloudinary/cloudinary')
 
-router.get("/", async (req, res, next) => {
-    let post = await Post.find()
-    .populate('postedBy')
-    .populate('sharedData')
-    .sort({"createdAt": -1})
+router.get("/", async (req, res) => {
+    let results = await getPosts({})
+    res.status(200).send(results)
+})
 
-    post = await User.populate(post, {path: "sharedData.postedBy"})
-    res.status(200).send(post)
+router.get('/:postId', async(req,res) => {
+    const postId = req.params.postId
+    let result = await getPosts({_id:postId})
+    result = result[0]
+    res.status(200).send(result)    
 })
 
 router.get('/:postId/getImage', async (req,res) => {
@@ -21,7 +23,7 @@ router.get('/:postId/getImage', async (req,res) => {
     res.status(200).send(postUrl)
 })
 
-router.post("/",  upload.single('postImage') ,async (req, res, next) => {
+router.post("/",  upload.single('postImage') ,async (req, res) => {
 
     const postData = {
         postedBy: req.session.user._id
@@ -129,5 +131,15 @@ router.post("/:id/share", async (req, res, next) => {
 
     res.status(200).send(post)
 })
+
+async function getPosts(filter){
+    let results = await Post.find(filter)
+    .populate('postedBy')
+    .populate('sharedData')
+    .sort({"createdAt": -1})
+
+    results = await User.populate(results, {path: "sharedData.postedBy"})
+    return results
+}
 
 module.exports = router;

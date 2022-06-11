@@ -17,13 +17,6 @@ $("#postTextarea").keyup(event => {
     submitButton.prop("disabled", false);
 })
 
-function displayPostData(postData, container, textbox, button){
-    const html = createPostHtml(postData)
-    container.prepend(html)
-    textbox.val("")
-    button.prop('disabled', true)
-}
-
 $("#submitPostButton").click(async (event) => {
     const button = $(event.target);
     const textbox = $("#postTextarea");
@@ -98,7 +91,6 @@ $("#postFile").change(function(){
     }
 })
 
-
 $(document).on('click','.likeButton', async event => {
     const button = $(event.target)
     const postId = getPostId(button)
@@ -149,6 +141,15 @@ $(document).on('click', '.postImg', async event => {
     const response = await fetch(`/api/posts/${postId}/getImage`)
     const postImageUrl = await response.text()
     window.location.href = postImageUrl
+})
+
+$(document).on('click', '.post', async event => {
+    const post = $(event.target)
+    const postId = getPostId(post)
+    
+    if(postId !== null && !post.is('button') && !post.is('img')){
+        window.location.href = `/post/${postId}`
+    }
 })
 
 function getPostId(element){
@@ -251,6 +252,13 @@ function outputPosts(results, container) {
     }
 }
 
+function outputPostWithReply(result, container){
+    container.html("")
+
+    const html = createPostHtml(result)
+    container.append(html)
+}
+
 function timeDifference(current, previous) {
 
     var msPerMinute = 60 * 1000;
@@ -305,4 +313,11 @@ function hideGif(){
 function hideGifImage(){
     $(".imageSpinner").css('visibility', 'hidden')
     $(".mainSectionContainer").find("div.imageSpinner").remove()
+}
+
+function displayPostData(postData, container, textbox, button){
+    const html = createPostHtml(postData)
+    container.prepend(html)
+    textbox.val("")
+    button.prop('disabled', true)
 }

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const Schema = mongoose.Schema;
 
@@ -10,7 +11,8 @@ const UserSchema = new Schema({
     password: { type: String, required: true, select:false},
     profilePic: { type: String, default: "/images/profilePic.jpeg" },
     likes: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-    shared: [{ type: Schema.Types.ObjectId, ref: 'Post' }]
+    shared: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+    jwtTempStorage: {type:String}
 }, { timestamps: true });
 
 
