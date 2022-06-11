@@ -27,14 +27,17 @@ function displayPostData(postData, container, textbox, button){
 $("#submitPostButton").click(async (event) => {
     const button = $(event.target);
     const textbox = $("#postTextarea");
-
+    
     data = {
         content: textbox.val(),
         postImage: formData
     }
 
+    
     if(data.postImage === undefined){
+        displayGif()
         $.post(`/api/posts`, {value: data.content}, postData => {
+        hideGif()
         displayPostData(postData, $(".postsContainer"), textbox, button)
     })
     }
@@ -43,6 +46,7 @@ $("#submitPostButton").click(async (event) => {
         const formData = data.postImage
         if(data.content !== undefined){
             formData.append('post', data.content)
+            displayGif()
             $.ajax({
                 url:`/api/posts`,
                 type:'POST',
@@ -50,11 +54,12 @@ $("#submitPostButton").click(async (event) => {
                 processData:false,
                 contentType:false,
                 success:(postData) => {
+                    hideGif()
                     displayPostData(postData, $(".postsContainer"), textbox, button)
                 }
             })
         }else{
-           
+            displayGif()
             $.ajax({
                 url:`/api/posts`,
                 type:'POST',
@@ -62,7 +67,8 @@ $("#submitPostButton").click(async (event) => {
                 processData:false,
                 contentType:false,
                 success:(postData) => {
-                    console.log(postData)
+                    hideGif()
+                    displayPostData(postData, $(".postsContainer"), textbox, button)
                 }
             })
         }
@@ -85,11 +91,9 @@ $("#postFile").change(function(){
 
             formData = new FormData()
             formData.append('postImage', blob)
-            console.log(formData)
             $("#submitPostButton").prop('disabled', false)
-            
-           
         }
+        
         reader.readAsDataURL(this.files[0])
     }
 })
@@ -273,3 +277,17 @@ function timeDifference(current, previous) {
         return Math.round(elapsed/msPerYear ) + ' years ago';   
     }
 }
+
+function displayGif(){
+    const imageSpinner = $(".imageSpinner")
+    const img = document.createElement('img')
+    img.src = `/images/loadingSpinner.gif`
+    imageSpinner.append(img)
+    $(".postsContainer").css('visibility', 'hidden')
+    }
+
+function hideGif(){
+    $(".imageSpinner").css('visibility', 'hidden')
+    $(".mainSectionContainer").find("div.imageSpinner").remove()
+    $(".postsContainer").css('visibility', 'visible')
+    }

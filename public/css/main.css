@@ -323,3 +323,15 @@ button span {
     object-fit: contain;
 }
 
+.imageSpinner{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.imageSpinner img {
+    width: 50%;
+    max-width: 75px;
+    margin-top: 10px;
+}
