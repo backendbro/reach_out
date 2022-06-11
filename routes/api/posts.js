@@ -14,6 +14,13 @@ router.get("/", async (req, res, next) => {
     res.status(200).send(post)
 })
 
+router.get('/:postId/getImage', async (req,res) => {
+    const postId = req.params.postId
+    const post = await Post.findById(postId)
+    const postUrl = post.postImage
+    res.status(200).send(postUrl)
+})
+
 router.post("/",  upload.single('postImage') ,async (req, res, next) => {
 
     const postData = {

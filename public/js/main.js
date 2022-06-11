@@ -53,9 +53,9 @@ $("#submitPostButton").click(async (event) => {
                 data:formData,
                 processData:false,
                 contentType:false,
-                success:(postData) => {
-                    hideGif()
-                    displayPostData(postData, $(".postsContainer"), textbox, button)
+                success:() => {
+                    hideGifImage()
+                    location.reload()
                 }
             })
         }else{
@@ -66,9 +66,9 @@ $("#submitPostButton").click(async (event) => {
                 data:formData,
                 processData:false,
                 contentType:false,
-                success:(postData) => {
-                    hideGif()
-                    displayPostData(postData, $(".postsContainer"), textbox, button)
+                success:() => {
+                    hideGifImage()
+                    location.reload()
                 }
             })
         }
@@ -139,6 +139,16 @@ $(document).on("click", ".shareButton", async (event) => {
         button.removeClass('active')
     }
 
+})
+
+$(document).on('click', '.postImg', async event => {
+    const image = $(event.target)
+    const postId = getPostId(image)
+    if(postId == null) return;
+
+    const response = await fetch(`/api/posts/${postId}/getImage`)
+    const postImageUrl = await response.text()
+    window.location.href = postImageUrl
 })
 
 function getPostId(element){
@@ -291,3 +301,8 @@ function hideGif(){
     $(".mainSectionContainer").find("div.imageSpinner").remove()
     $(".postsContainer").css('visibility', 'visible')
     }
+
+function hideGifImage(){
+    $(".imageSpinner").css('visibility', 'hidden')
+    $(".mainSectionContainer").find("div.imageSpinner").remove()
+}
