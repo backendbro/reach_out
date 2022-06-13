@@ -11,9 +11,21 @@ router.get("/", async (req, res) => {
 
 router.get('/:postId', async(req,res) => {
     const postId = req.params.postId
-    let result = await getPosts({_id:postId})
-    result = result[0]
-    res.status(200).send(result)    
+    
+    let postData = await getPosts({_id:postId})
+    postData = postData[0]
+
+    let results = {
+        postData:postData
+    }
+
+    if(postData.replyTo !== undefined){
+        results.replyTo = postData.replyTo
+    }
+
+    results.replies = await getPosts({replyTo:postId})
+
+    res.status(200).send(results)    
 })
 
 router.get('/:postId/getImage', async (req,res) => {
@@ -38,6 +50,10 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
     if(req.body){
         const post = req.body.value || req.body.post
         postData.post = post
+    }  
+
+    if(req.body.replyTo){
+        postData.replyTo = req.body.replyTo
     }
     
     try{
@@ -51,9 +67,10 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
        
         }else{
          
-         let postWithoutImage = await Post.create(postData)
-         postWithoutImage = await User.populate(postWithoutImage, {path: 'postedBy'})
-         return res.status(200).send(postWithoutImage)  
+         let normPost = await Post.create(postData)
+         normPost = await User.populate(normPost, {path: 'postedBy'})
+         normPost = await Post.populate(normPost, {path:'replyTo'})
+         return res.status(200).send(normPost)  
         
         }
     }catch(error){
@@ -136,9 +153,11 @@ async function getPosts(filter){
     let results = await Post.find(filter)
     .populate('postedBy')
     .populate('sharedData')
+    .populate('replyTo')
     .sort({"createdAt": -1})
 
     results = await User.populate(results, {path: "sharedData.postedBy"})
+    results = await User.populate(results, {path: "replyTo.postedBy"})
     return results
 }
 

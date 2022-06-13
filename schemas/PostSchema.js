@@ -9,7 +9,8 @@ const PostSchema = new Schema({
     pinned: Boolean,
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     sharedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    sharedData: { type: Schema.Types.ObjectId, ref: 'Post' }
+    sharedData: { type: Schema.Types.ObjectId, ref: 'Post' },
+    replyTo: { type: Schema.Types.ObjectId, ref: 'Post' }
 }, { timestamps: true });
 
 var Post = mongoose.model('Post', PostSchema);

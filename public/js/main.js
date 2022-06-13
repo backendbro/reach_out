@@ -5,7 +5,7 @@ $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
     const value = textbox.val().trim();
     
-    var submitButton = $("#submitPostButton");
+    const submitButton = $("#submitPostButton");
 
     if(submitButton.length == 0) return alert("No submit button found");
 
@@ -15,6 +15,19 @@ $("#postTextarea").keyup(event => {
     }
 
     submitButton.prop("disabled", false);
+})
+
+$("#replyTextarea").keyup(event => {
+    const textbox = $(event.target)
+    const value = textbox.val().trim()
+
+    const submitButton = $("#submitReplyButton")
+    if(value == ""){
+        submitButton.prop('disabled', true)
+        return;
+    }
+
+    submitButton.prop('disabled', false)
 })
 
 $("#submitPostButton").click(async (event) => {
@@ -72,6 +85,28 @@ $("#submitPostButton").click(async (event) => {
 
 })
 
+$("#submitReplyButton").click(async (event) => {
+    const button = $(event.target)
+    const post = $("#replyTextarea").val()
+    const postId = button.data().id
+    
+    if(postId == null) return console.log('PostId is null')
+
+    const content = {
+        value:post,
+        replyTo:postId
+    }
+
+    $.ajax({
+        url:'/api/posts',
+        type:'POST',
+        data:content,
+        success:() => {
+            location.reload()
+        }
+    })
+    
+})
 
 $("#postFile").change(function(){
     if(this.files && this.files[0]){
@@ -152,6 +187,24 @@ $(document).on('click', '.post', async event => {
     }
 })
 
+$("#replyModal").on('show.bs.modal', async event => {
+    const button = $(event.relatedTarget)
+    const postId = getPostId(button)
+
+    if(postId == null) return console.log('PostId is null')
+    $("#submitReplyButton").data("id", postId)
+   
+    const response = await fetch(`/api/posts/${postId}`)
+    const results = await response.json()
+    outputPosts(results.postData, $("#originalPostContainer"))
+})
+
+$("#replyModal").on("hidden.bs.modal", () => {
+    $("#replyTextarea").val("")
+    $("#originalPostContainer").html("")
+});
+
+
 function getPostId(element){
     const isRoot = element.hasClass('post')
     const rootElement = isRoot ? element : element.closest('.post')
@@ -217,7 +270,7 @@ function createPostHtml(postData) {
                         </div>
                         <div class='postFooter'>
                             <div class='postButtonContainer'>
-                                <button>
+                                <button  data-toggle='modal' data-target='#replyModal'>
                                     <i class='far fa-comment'></i>
                                 </button>
                             </div>
@@ -242,6 +295,10 @@ function createPostHtml(postData) {
 function outputPosts(results, container) {
     container.html("");
 
+    if(!Array.isArray(results)){
+        results = [results]
+    }
+
     results.forEach(result => {
         var html = createPostHtml(result)
         container.append(html);
@@ -252,11 +309,22 @@ function outputPosts(results, container) {
     }
 }
 
-function outputPostWithReply(result, container){
-    container.html("")
+function outputPostWithReply(results, container){
+   container.html("")
 
-    const html = createPostHtml(result)
+   if(results.replyTo !== undefined && results.replyTo._id !== undefined){
+    const html = createPostHtml(results.replyTo)
     container.append(html)
+   }
+
+   const mainPostHtml = createPostHtml(results.postData)
+   container.append(mainPostHtml)
+
+   results.replies.forEach(reply => {
+    const html = createPostHtml(reply)
+    container.append(html)
+   })
+
 }
 
 function timeDifference(current, previous) {
