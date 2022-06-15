@@ -336,3 +336,35 @@ button span {
     max-width: 75px;
     margin-top: 10px;
 }
+
+.postsContainer .footer {
+    display: flex;
+    flex-direction: row;
+    padding: var(--spacing);
+    flex-shrink: 0px;
+    overflow-y: hidden;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 3.9rem;  
+}
+
+.postsContainer .footer textarea {
+    flex: 1;
+    resize: none;
+    background-color: #DDDDDD;
+    border-radius: 18px;
+    border: none;
+    padding: 8px 12px;
+    height: 38px;
+    width: 120px;
+    
+}
+
+.postsContainer .footer button {
+    background-color: transparent;
+    color: var(--blue);
+    font-size: 24px;
+    padding: 0;
+    
+}

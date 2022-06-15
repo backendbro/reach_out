@@ -80,7 +80,8 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
 })
 
 
-router.put("/:id/like", async (req, res, next) => {
+
+router.put("/:id/like", async (req, res) => {
 
     const postId = req.params.id;
     const userId = req.session.user._id;
@@ -108,7 +109,7 @@ router.put("/:id/like", async (req, res, next) => {
 })
 
 
-router.post("/:id/share", async (req, res, next) => {
+router.post("/:id/share", async (req, res) => {
     const postId = req.params.id;
     const userId = req.session.user._id;
 

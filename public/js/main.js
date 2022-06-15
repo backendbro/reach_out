@@ -102,10 +102,9 @@ $("#submitReplyButton").click(async (event) => {
         type:'POST',
         data:content,
         success:() => {
-            location.reload()
+           location.reload()
         }
     })
-    
 })
 
 $("#postFile").change(function(){
@@ -214,7 +213,7 @@ function getPostId(element){
     return postId
 }
 
-function createPostHtml(postData) {
+function createPostHtml(postData, comment=false) {
 
     if(postData == null) return alert("post object is null");
 
@@ -229,6 +228,14 @@ function createPostHtml(postData) {
         return console.log("User object not populated");
     }
 
+    let replyToText = ""
+    if(comment && postData.replyTo && postData.replyTo._id){
+            const replyTo = postData.replyTo.postedBy.username
+            replyToText = `<span>
+            Replying to <a href='/profile/${replyTo}'>@${replyTo}</a>    
+        </span>`
+        }
+
     const displayName = postedBy.full_name
     const timestamp = timeDifference(new Date(), new Date(postData.createdAt));
 
@@ -242,17 +249,19 @@ function createPostHtml(postData) {
        `
     } 
 
-    var sharedText = '';
+    let sharedText = '';
     if(isShared) {
         sharedText = `<span>
-                        <i class='fas fa-retweet'></i>
+                        <i class='fas fa-share'></i>
                         Shared by <a href='/profile/${sharedBy}'>@${sharedBy}</a>    
                     </span>`
     }
 
+   
     return `<div class='post' data-id='${postData._id}'>
                 <div class='postActionContainer'>
                     ${sharedText}
+                    ${replyToText}
                 </div>
                 <div class='mainContentContainer'>
                     <div class='userImageContainer'>
@@ -272,6 +281,7 @@ function createPostHtml(postData) {
                             <div class='postButtonContainer'>
                                 <button  data-toggle='modal' data-target='#replyModal'>
                                     <i class='far fa-comment'></i>
+                                    
                                 </button>
                             </div>
                             <div class='postButtonContainer blue'>
@@ -286,6 +296,7 @@ function createPostHtml(postData) {
                                     <span>${postData.likes.length || ""}</span>
                                 </button>
                             </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -300,7 +311,7 @@ function outputPosts(results, container) {
     }
 
     results.forEach(result => {
-        var html = createPostHtml(result)
+        var html = createPostHtml(result, comment=true)
         container.append(html);
     });
 
@@ -317,11 +328,11 @@ function outputPostWithReply(results, container){
     container.append(html)
    }
 
-   const mainPostHtml = createPostHtml(results.postData)
+   const mainPostHtml = createPostHtml(results.postData, true)
    container.append(mainPostHtml)
 
    results.replies.forEach(reply => {
-    const html = createPostHtml(reply)
+    const html = createPostHtml(reply, true)
     container.append(html)
    })
 
