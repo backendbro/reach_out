@@ -150,6 +150,12 @@ router.post("/:id/share", async (req, res) => {
     res.status(200).send(post)
 })
 
+router.delete('/:postId', async (req,res) => {
+    const postId = req.params.postId
+    let post = await  Post.findByIdAndDelete(postId)
+    res.status(200).json('Deleted')
+})
+
 async function getPosts(filter){
     let results = await Post.find(filter)
     .populate('postedBy')

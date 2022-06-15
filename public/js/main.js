@@ -181,9 +181,26 @@ $(document).on('click', '.post', async event => {
     const post = $(event.target)
     const postId = getPostId(post)
     
-    if(postId !== null && !post.is('button') && !post.is('img')){
+    if(postId !== null && !post.is('button') && !post.is('img') && !post.is('li')){
         window.location.href = `/post/${postId}`
     }
+})
+
+$(document).on('click', '.deleteButton', async event => {
+    const button = $(event.target)
+    const postId = getPostId(button)
+    if(postId == null) return console.log('PostId is null')
+    const response = await fetch(`/api/posts/${postId}`, {
+        method:'DELETE',
+        headers:{
+            'Content-type':'application/json'
+        }
+    })
+    const postData = await response.json()
+    if(postData){
+    location.reload()
+    }
+    
 })
 
 $("#replyModal").on('show.bs.modal', async event => {
@@ -257,6 +274,20 @@ function createPostHtml(postData, comment=false) {
                     </span>`
     }
 
+    let button = ""
+    if(postData.postedBy._id == userLoggedIn._id){        
+        button = `<button class='pinButton'>
+        <nav>
+        <li class="hov"><i class="fas fa-ellipsis-v"></i>
+          <ul class="mainLink">
+            <li class="deleteButton">DELETE</li>
+            <li class="pinTweet">PIN</li>
+          </ul>
+        </li>
+      </nav>
+      </button>`
+    }
+    
    
     return `<div class='post' data-id='${postData._id}'>
                 <div class='postActionContainer'>
@@ -272,7 +303,9 @@ function createPostHtml(postData, comment=false) {
                             <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                             <span class='username'>@${postedBy.username}</span>
                             <span class='date'>${timestamp}</span>
-                        </div>
+                            ${button}
+                            </div>
+                            
                         <div class='postBody'>
                             <span>${postData.post}</span>
                             ${postImage}
@@ -281,7 +314,6 @@ function createPostHtml(postData, comment=false) {
                             <div class='postButtonContainer'>
                                 <button  data-toggle='modal' data-target='#replyModal'>
                                     <i class='far fa-comment'></i>
-                                    
                                 </button>
                             </div>
                             <div class='postButtonContainer blue'>
@@ -294,7 +326,7 @@ function createPostHtml(postData, comment=false) {
                                 <button class='likeButton ${likeButtonActiveClass}'>
                                     <i class='far fa-heart'></i>
                                     <span>${postData.likes.length || ""}</span>
-                                </button>
+                                    </button>
                             </div>
                            
                         </div>
