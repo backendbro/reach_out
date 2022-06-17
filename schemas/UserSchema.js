@@ -12,7 +12,10 @@ const UserSchema = new Schema({
     profilePic: { type: String, default: "/images/profilePic.jpeg" },
     likes: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     shared: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-    jwtTempStorage: {type:String}
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    coverPic:{type:String, default:  "/images/profilePic.jpeg" }
+    
 }, { timestamps: true });
 
 

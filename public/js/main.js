@@ -1,5 +1,6 @@
 let data = new Object();
 let formData;
+let cropper;
 
 $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
@@ -104,6 +105,100 @@ $("#submitReplyButton").click(async (event) => {
         success:() => {
            location.reload()
         }
+    })
+})
+
+$("#filePhoto").change(function(){
+    if(this.files && this.files[0]){
+        let reader = new FileReader()
+        reader.onload = (e) => {
+            const imagePreview = document.getElementById('imagePreview')
+            imagePreview.src = e.target.result
+
+            if(cropper !== undefined){
+                console.log('It exists')
+                cropper.destroy()
+            }
+
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1/1,
+                background:false
+            })
+            console.log(cropper)
+        }
+        reader.readAsDataURL(this.files[0])
+    }
+})
+
+$("#coverPhoto").change(function(){
+    if(this.files && this.files[0]){
+        let reader = new FileReader()
+        reader.onload = (e) => {
+            const imagePreview = document.getElementById('coverPreview')
+            imagePreview.src = e.target.result
+
+            if(cropper !== undefined){
+                console.log('It exists')
+                cropper.destroy()
+            }
+
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 16 / 9,
+                background:false
+            })
+            console.log(cropper)
+        }
+        reader.readAsDataURL(this.files[0])
+    }
+})
+
+$("#imageUploadButton").click(event => {
+   const canvas = cropper.getCroppedCanvas()
+   if(canvas == null){
+    return console.log('There is no image, Please select an image')
+   }
+
+   canvas.toBlob(blob => {
+    const formData = new FormData();
+    formData.append('profileImageUpload', blob)
+    $.ajax({
+        type:'PUT',
+        url:`/api/posts/profilepicture`,
+        data:formData,
+        processData: false,
+        contentType: false,
+        success:(xhr) => {
+            if(xhr.status == 400){
+                alert('Please reupload again')
+            }
+            location.reload()
+        }
+    })
+   })
+})
+
+$("#coverPhotoButton").click(event => {
+    const canvas = cropper.getCroppedCanvas()
+    if(canvas == null){
+     return console.log('There is no image, Please select an image')
+    }
+ 
+    canvas.toBlob(blob => {
+     const formData = new FormData();
+     formData.append('coverImageUpload', blob)
+     $.ajax({
+         type:'PUT',
+         url:`/api/posts/coverpicture`,
+         data:formData,
+         processData: false,
+         contentType: false,
+         success:(xhr) => {
+             if(xhr.status == 400){
+                 alert('Please reupload again')
+             }
+             location.reload()
+         }
+     })
     })
 })
 
