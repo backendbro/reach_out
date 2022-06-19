@@ -7,17 +7,34 @@ router.get("/", async (req, res) => {
         pageTitle: user.username,
         userLoggedIn: req.session.user,
         userLoggedInJs: JSON.stringify(req.session.user),
-        profileUser: user
+        profileUser: user,
+        selectedTab:'post'
     }
     
     res.status(200).render("profilePage", payload);
 })
 
-
 router.get("/:username", async(req,res) => {
     const username = req.params.username
     const loggedInUser = req.session.user
     const payload = await getPayload(username, loggedInUser)
+    payload.selectedTab = 'post'
+    res.status(200).render('profilePage', payload)
+})
+
+router.get('/:username/replies', async (req,res) => {
+    const username = req.params.username
+    const loggedInUser = req.session.user
+    const payload = await getPayload(username, loggedInUser)
+    payload.selectedTab = 'replies'
+    res.status(200).render('profilePage', payload)
+})
+
+router.get('/:username/media', async (req,res) => {
+    const username = req.params.username
+    const loggedInUser = req.session.user
+    const payload = await getPayload(username, loggedInUser)
+    payload.selectedTab = 'media'
     res.status(200).render('profilePage', payload)
 })
 

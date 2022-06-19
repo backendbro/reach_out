@@ -5,7 +5,20 @@ const upload = require('../../multer/upload')
 const Cloudinary = require('../../cloudinary/cloudinary')
 
 router.get("/", async (req, res) => {
-    let results = await getPosts({})
+    const queryString = req.query
+    if(queryString.getReply !== undefined){
+        const getReply = queryString.getReply
+        queryString.replyTo = {$exists:getReply}
+        delete queryString.getReply
+    }
+
+    if(queryString.getMedia !== undefined){
+        const getMedia = queryString.getMedia
+        queryString.postImage = {$exists:getMedia}
+        delete queryString.getMedia
+    }
+
+    let results = await getPosts(queryString)
     res.status(200).send(results)
 })
 
@@ -79,6 +92,21 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
     }
 })
 
+router.put('/:postId', async(req,res) => {
+
+    // const {pinned} = req.body
+    // const postId = req.params.postId
+    // if(pinned !== undefined){
+    //     let update = await Post.updateMany({postedBy: req.session.user }, { pinned: false })
+    //     console.log(update)
+    // }
+   
+    return;
+    let post = await Post.findByIdAndUpdate(postId, {pinned:pinned}, {new:true})
+    console.log(post)
+    res.status(204).send(post)
+})
+
 router.put("/:id/like", async (req, res) => {
 
     const postId = req.params.id;
@@ -136,7 +164,7 @@ router.put('/coverpicture', upload.single("coverImageUpload"), async (req,res) =
         const uploadedImage = await Cloudinary.uploader.upload(path)
         const urlPath = uploadedImage.url
         const user = await User.findByIdAndUpdate(userId, {coverPic:urlPath}, {new:true})
-        console.log(user)
+       
         res.sendStatus(200)
     }catch(error){
         console.log(error)

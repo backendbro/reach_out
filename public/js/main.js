@@ -298,6 +298,34 @@ $(document).on('click', '.deleteButton', async event => {
     
 })
 
+$(document).on('click', '#pinPostButton', async event => {
+    const button = $(event.target)
+    const postId  = button.data().id
+    if(postId == undefined) return console.log('PostId is undefined')
+
+    $.ajax({
+        url: `/api/posts/${postId}`,
+        type: "PUT",
+        data: { pinned: true },
+        success: (data, status, xhr) => {
+
+            if(xhr.status != 204) {
+                alert("could not delete post");
+                return;
+            }
+            
+            location.reload();
+        }
+    }) 
+ 
+})
+
+$("#confirmPinModal").on('show.bs.modal', async event => {
+    const button = $(event.relatedTarget)
+    const postId = getPostId(button)
+    $("#pinPostButton").data('id', postId)
+})
+
 $("#replyModal").on('show.bs.modal', async event => {
     const button = $(event.relatedTarget)
     const postId = getPostId(button)
@@ -376,7 +404,7 @@ function createPostHtml(postData, comment=false) {
         <li class="hov"><i class="fas fa-ellipsis-v"></i>
           <ul class="mainLink">
             <li class="deleteButton">DELETE</li>
-            <li class="pinTweet">PIN</li>
+            <li data-toggle="modal" data-target="#confirmPinModal">PIN</li>
           </ul>
         </li>
       </nav>
