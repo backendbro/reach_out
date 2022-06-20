@@ -73,30 +73,35 @@ mixin createPinnedPostModal()
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5#confirmPinModalLabel.modal-title Pin this post?
+                    h5#confirmPinModalLabel.modal-title Pin this Post?
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                     span(aria-hidden='true') &times;
                 .modal-body
-                    p This post will appear at the top of your profile. You can only pin one post.
+                    p This will appear at the top of your profile and replace any previously pinned post. Are you sure?
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#pinPostButton.btn.btn-primary(type='button') PIN
+                    button#pinPostButton.btn.btn-primary(type='button') Pin
 
 mixin createUnpinPostModal()
     #unpinModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='unpinModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5#unpinModalLabel.modal-title Unpin the post?
+                    h5#unpinModalLabel.modal-title Unpin from your profile?
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                     span(aria-hidden='true') &times;
                 .modal-body
-                    p This post will be unpinned.
+                    p Are you sure?
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#unpinPostButton.btn.btn-primary(type='button') UNPIN
+                    button#unpinPostButton.btn.btn-primary(type='button') Unpin
 
 mixin createPostModals(userLoggedIn)
     +createReplyModal(userLoggedIn)
     +createPinnedPostModal()
     +createUnpinPostModal()
+
+mixin createFollowButton(user, isFollowing)
+    - text = isFollowing ? "Following" : "Follow"
+    - buttonClass = isFollowing ? "followButton following" : "followButton"
+    button(class=buttonClass, data-user=user._id) #{text}

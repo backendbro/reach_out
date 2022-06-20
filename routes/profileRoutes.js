@@ -38,6 +38,33 @@ router.get('/:username/media', async (req,res) => {
     res.status(200).render('profilePage', payload)
 })
 
+router.get('/:username/followers', async (req,res) => {
+    const username = req.params.username
+    const user = await User.findOne({username:username})
+    .populate('followers')
+    const payload = {
+        pageTitle:user.username,
+        userLoggedIn:req.session.user,
+        userLoggedInJs:JSON.stringify(req.session.user),
+        user:user,
+        selectedTab:'followers'
+    }
+    res.status(200).render('followPage', payload)
+})
+
+router.get('/:username/following', async (req,res) => {
+    const username = req.params.username
+    const user = await User.findOne({username:username})
+    .populate('following')
+    const payload = {
+        pageTitle:user.username,
+        userLoggedIn:req.session.user,
+        userLoggedInJs:JSON.stringify(req.session.user),
+        user:user
+    }
+    res.status(200).render('followPage', payload)
+})
+
 async function getPayload(username, loggedInUser){
     let user = await User.findOne({username:username})
     if(user == null){

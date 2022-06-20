@@ -162,8 +162,8 @@ $("#imageUploadButton").click(event => {
     const formData = new FormData();
     formData.append('profileImageUpload', blob)
     $.ajax({
-        type:'PUT',
-        url:`/api/posts/profilepicture`,
+        type:'POST',
+        url:`/api/users/profilepicture`,
         data:formData,
         processData: false,
         contentType: false,
@@ -187,8 +187,8 @@ $("#coverPhotoButton").click(event => {
      const formData = new FormData();
      formData.append('coverImageUpload', blob)
      $.ajax({
-         type:'PUT',
-         url:`/api/posts/coverpicture`,
+         type:'POST',
+         url:`/api/users/coverpicture`,
          data:formData,
          processData: false,
          contentType: false,
@@ -218,6 +218,37 @@ $("#postFile").change(function(){
         
         reader.readAsDataURL(this.files[0])
     }
+})
+
+$(document).on('click', '.followButton', async event => {
+    const button = $(event.target)
+   const userId = button.data().user
+    if(userId == undefined) return console.log('userId is not defined')
+
+   const response = await fetch(`/api/users/${userId}/follow`, {
+    method:'PUT',
+    headers:{
+        "Content-type":"application/json"
+    }
+   })
+   const userData = await response.json()
+   
+   let difference =  1
+   if(userData.followers && userData.followers.includes(userLoggedIn._id)){
+    button.addClass('following')
+    button.text('Following')
+    }else{
+    button.removeClass('following')
+    button.text('Follow')
+    difference = -1
+    }
+
+   var followersLabel = $("#followersValue");
+   if(followersLabel.length != 0) {
+       var followersText = followersLabel.text();
+       followersText = parseInt(followersText);
+       followersLabel.text(followersText + difference);
+   }
 })
 
 $(document).on('click','.likeButton', async event => {
@@ -425,20 +456,22 @@ function createPostHtml(postData, comment=false) {
 
     let button = ""
     let pinnedPostText = ""
+    let pinName = "PIN"
     if(postData.postedBy._id == userLoggedIn._id){        
     let dataTarget = "#confirmPinModal"
 
     if(postData.pinned == true){
         dataTarget = "#unpinModal"
         pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>";
+        pinName = "UN-PIN"
     }
 
         button = `<button class=''>
-        <nav>
+        <nav class="buttonLink">
         <li class="hov"><i class="fas fa-ellipsis-v"></i>
           <ul class="mainLink">
             <li class="deleteButton">DELETE</li>
-            <li data-toggle="modal" data-target="${dataTarget}">PIN</li>
+            <li data-toggle="modal" data-target="${dataTarget}">${pinName}</li>
           </ul>
         </li>
       </nav>

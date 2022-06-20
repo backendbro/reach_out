@@ -339,10 +339,10 @@ button span {
     margin-top: 10px;
 }
 
-nav{
+nav, .buttonLink{
     position: absolute;
     margin-left: -40px;
-    margin-top: -10px;
+    margin-top: -50px;
 }
 
 ul,li{
@@ -459,7 +459,13 @@ ul,li{
     border-radius: 60px;
     display: inline-block;
     margin-left: var(--spacing);
+   
 }
+
+.followButton {
+    width: 100px;
+}
+
 
 .profileButton:hover,
 .followButton:hover {

@@ -28,16 +28,16 @@ block content
                         button.profilePictureButton(data-toggle="modal", data-target="#imageUploadModal")
                             i.fas.fa-camera
 
-            .profileButtonsContainer
+            .profileButtonsContainer 
                 if profileUser._id != userLoggedIn._id
                     a.profileButton(href=`/messages/${profileUser._id}`)
                         i.fas.fa-envelope
 
                     - var profileUserId = profileUser._id.toString();
-                    //- - if(userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
-                    //-     +createFollowButton(profileUser, true)
-                    //- - else
-                    //-     +createFollowButton(profileUser, false)
+                    - if(userLoggedIn.following && userLoggedIn.following.includes(profileUserId))
+                        +createFollowButton(profileUser, true)
+                    - else
+                        +createFollowButton(profileUser, false)
 
             .userDetailsContainer
                 span.displayName #{profileUser.full_name}

@@ -92,9 +92,8 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
     }
 })
 
-router.put('/:postId', async(req,res) => {
-
-  
+router.put('/:postId', async(req,res) => {  
+    console.log('This is from pinned post.')
     if(req.body.pinned !== undefined) {
         await Post.updateMany({postedBy: req.session.user }, { pinned: false })
         .catch(error => {
