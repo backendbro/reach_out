@@ -94,17 +94,22 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
 
 router.put('/:postId', async(req,res) => {
 
-    // const {pinned} = req.body
-    // const postId = req.params.postId
-    // if(pinned !== undefined){
-    //     let update = await Post.updateMany({postedBy: req.session.user }, { pinned: false })
-    //     console.log(update)
-    // }
-   
-    return;
-    let post = await Post.findByIdAndUpdate(postId, {pinned:pinned}, {new:true})
-    console.log(post)
-    res.status(204).send(post)
+  
+    if(req.body.pinned !== undefined) {
+        await Post.updateMany({postedBy: req.session.user }, { pinned: false })
+        .catch(error => {
+            console.log(error);
+            res.sendStatus(400);
+        })
+    }
+
+   Post.findByIdAndUpdate(req.params.postId, req.body)
+   .then(() =>  res.sendStatus(204)) 
+   .catch(error => {
+    console.log(error)
+    res.sendStatus(400)
+   })
+    
 })
 
 router.put("/:id/like", async (req, res) => {
@@ -134,43 +139,6 @@ router.put("/:id/like", async (req, res) => {
     res.status(200).send(post)
 })
 
-router.put('/profilepicture', upload.single("profileImageUpload"), async (req,res) => {
-    if(!req.file){
-        console.log('Please upload an image')
-    }
-
-    const userId = req.session.user._id
-    const path = req.file.path
-    try{
-        const uploadedImage = await Cloudinary.uploader.upload(path)
-        const urlPath = uploadedImage.url
-        const user = await User.findByIdAndUpdate(userId, {profilePic:urlPath}, {new:true})
-
-        res.sendStatus(200)
-    }catch(error){
-        console.log(error)
-        res.sendStatus(400)
-    } 
-})
-
-router.put('/coverpicture', upload.single("coverImageUpload"), async (req,res) => {
-    if(!req.file){
-        console.log('Please upload an image')
-    }
-
-    const userId = req.session.user._id
-    const path = req.file.path
-    try{
-        const uploadedImage = await Cloudinary.uploader.upload(path)
-        const urlPath = uploadedImage.url
-        const user = await User.findByIdAndUpdate(userId, {coverPic:urlPath}, {new:true})
-       
-        res.sendStatus(200)
-    }catch(error){
-        console.log(error)
-        res.sendStatus(400)
-    } 
-})
 
 router.post("/:id/share", async (req, res) => {
     const postId = req.params.id;

@@ -80,7 +80,7 @@ mixin createPinnedPostModal()
                     p This post will appear at the top of your profile. You can only pin one post.
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#pinPostButton.btn.btn-primary(type='button') Pin
+                    button#pinPostButton.btn.btn-primary(type='button') PIN
 
 mixin createUnpinPostModal()
     #unpinModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='unpinModalLabel', aria-hidden='true')
@@ -94,7 +94,7 @@ mixin createUnpinPostModal()
                     p This post will be unpinned.
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#unpinPostButton.btn.btn-primary(type='button') Pin
+                    button#unpinPostButton.btn.btn-primary(type='button') UNPIN
 
 mixin createPostModals(userLoggedIn)
     +createReplyModal(userLoggedIn)

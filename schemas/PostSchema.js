@@ -6,7 +6,7 @@ const PostSchema = new Schema({
     post: { type: String, trim: true },
     postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     postImage:{type:String},
-    pinned: Boolean,
+    pinned:{type: Boolean},
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     sharedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     sharedData: { type: Schema.Types.ObjectId, ref: 'Post' },

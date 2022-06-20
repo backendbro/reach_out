@@ -310,20 +310,46 @@ $(document).on('click', '#pinPostButton', async event => {
         success: (data, status, xhr) => {
 
             if(xhr.status != 204) {
-                alert("could not delete post");
+                alert("could not pin post");
                 return;
             }
-            
+               
             location.reload();
         }
     }) 
  
 })
 
+$(document).on('click', "#unpinPostButton", async event => {
+    const button = $(event.target)
+    const postId = button.data().id
+    if(postId ==  undefined) return console.log('PostId is not defined')
+
+   $.ajax({
+    url:`/api/posts/${postId}`,
+    type:'PUT',
+    data:{pinned:false},
+    success:(data, status, xhr) => {
+        if(xhr.status !== 204){
+            alert("could not pin post");
+            return;
+        }
+
+        location.reload()
+    }
+   })
+})
+
 $("#confirmPinModal").on('show.bs.modal', async event => {
     const button = $(event.relatedTarget)
     const postId = getPostId(button)
     $("#pinPostButton").data('id', postId)
+})
+
+$("#unpinModal").on('show.bs.modal', async event => {
+    const button = $(event.relatedTarget)
+    const postId = getPostId(button)
+    $("#unpinPostButton").data("id", postId)
 })
 
 $("#replyModal").on('show.bs.modal', async event => {
@@ -398,13 +424,21 @@ function createPostHtml(postData, comment=false) {
     }
 
     let button = ""
+    let pinnedPostText = ""
     if(postData.postedBy._id == userLoggedIn._id){        
-        button = `<button class='pinButton'>
+    let dataTarget = "#confirmPinModal"
+
+    if(postData.pinned == true){
+        dataTarget = "#unpinModal"
+        pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>";
+    }
+
+        button = `<button class=''>
         <nav>
         <li class="hov"><i class="fas fa-ellipsis-v"></i>
           <ul class="mainLink">
             <li class="deleteButton">DELETE</li>
-            <li data-toggle="modal" data-target="#confirmPinModal">PIN</li>
+            <li data-toggle="modal" data-target="${dataTarget}">PIN</li>
           </ul>
         </li>
       </nav>
@@ -422,6 +456,7 @@ function createPostHtml(postData, comment=false) {
                         <img src='${postedBy.profilePic}'>
                     </div>
                     <div class='postContentContainer'>
+                    <div class='pinnedPostText'>${pinnedPostText}</div>
                         <div class='header'>
                             <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                             <span class='username'>@${postedBy.username}</span>
