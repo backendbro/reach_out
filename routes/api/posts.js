@@ -18,6 +18,11 @@ router.get("/", async (req, res) => {
         delete queryString.getMedia
     }
 
+    if(queryString.search !== undefined){
+        queryString.post = {$regex: queryString.search, $options:'i'}
+        delete queryString.search
+    }
+
     let results = await getPosts(queryString)
     res.status(200).send(results)
 })

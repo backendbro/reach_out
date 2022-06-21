@@ -3,6 +3,22 @@ const User = require('../../schemas/UserSchema')
 const upload = require('../../multer/upload')
 const Cloudinary = require('../../cloudinary/cloudinary')
 
+
+router.get('/', async (req,res) => {
+    let queryString;
+    if(req.query.search !== undefined){
+        queryString = {
+            $or : [
+                {full_name:{$regex:req.query.search, $options:'i'}},
+                {username:{$regex:req.query.search, $options:'i'}}
+            ]
+        }
+    }
+
+    const users = await User.find(queryString)
+    res.status(200).send(users)
+})
+
 router.post('/profilepicture', upload.single("profileImageUpload"), async (req,res) => {
     
     if(!req.file){
@@ -68,12 +84,19 @@ router.put('/:userId/follow', async (req,res) => {
    
 })
 
-router.get('/:userId', async(req,res) => {
+router.get('/:userId/following', async(req,res) => {
     const userId = req.params.userId
     const user = await User.findById(userId)
     .populate('following')
-    .populate('followers')
-    res.status(200).send(user)
+    res.status(200).send(user.following)
 })
+
+router.get('/:userId/follower', async(req,res) => {
+    const userId = req.params.userId
+    const user = await User.findById(userId)
+    .populate('followers')
+    res.status(200).send(user.followers) 
+})
+
 
 module.exports = router
