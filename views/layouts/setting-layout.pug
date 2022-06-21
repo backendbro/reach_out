@@ -14,7 +14,6 @@ html(lang="en")
     body 
         script. 
             const userLoggedIn=!{userLoggedInJs}
-            const profilePic = !{profilePic}
         .wrapper 
             .row 
                 nav.col-2
@@ -53,24 +52,28 @@ html(lang="en")
                                     .tab-content
                                         #account-general.tab-pane.fade.active.show
                                             .card-body.media.align-items-center
-                                                img.d-block.ui-w-80(src='#{profilePic}', alt='')
+                                                img.d-block.ui-w-80(src=profileUser.profilePic, alt='')
                                                 .media-body.ml-4
                                                     label.btn.btn-outline-primary Upload new photo
                                                         input.account-settings-fileinput(type='file')
                                                     button.btn.btn-default.md-btn-flat(type='button') Reset
                                             .card-body
-                                                .form-group
-                                                    label.form-label Username
-                                                    input.form-control.mb-1(type='text', value='john_doe')
-                                                .form-group
-                                                    label.form-label Name
-                                                    input.form-control(type='text', value='John Doe')
-                                                .form-group
-                                                    label.form-label E-mail
-                                                    input.form-control.mb-1(type='text', value='johndoe@mail.com')
-                                                .form-group
-                                                    label.form-label Description
-                                                    textarea.form-control(name="description" placeholder="Enter a description about yourself")
+                                                form(action="/api/settings/general", method="post") 
+                                                    .form-group
+                                                        label.form-label Username
+                                                        input.form-control.mb-1(type='text', name="username", placeholder='john_doe')
+                                                    .form-group
+                                                        label.form-label Full-Name
+                                                        input.form-control(type='text', name="full_name", placeholder='John Doe')
+                                                    .form-group
+                                                        label.form-label E-mail
+                                                        input.form-control.mb-1(type='text', name="email", placeholder='johndoe@mail.com')
+                                                    .form-group
+                                                        label.form-label Description
+                                                        textarea.form-control(name="description", placeholder="Enter a description about yourself")                                                
+                                                    .footer.text-right.mt-3
+                                                        button.btn.btn-primary(type='submit') Save
+                                                        button.btn.btn-default(type='button') Cancel
                                         #account-change-password.tab-pane.fade
                                             .card-body.pb-2
                                                 .form-group
@@ -83,9 +86,6 @@ html(lang="en")
                                                 label.form-label Repeat new password
                                                 input.form-control(type='password')
 
-                    .footer.text-right.mt-3
-                        button.btn.btn-primary(type='button') Save
-                        button.btn.btn-default(type='button') Cancel
 
                 div.d-none.d-md-block.col-md-2.col-lg-4
 

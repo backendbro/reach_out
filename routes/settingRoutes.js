@@ -1,11 +1,11 @@
 const router = require('express').Router()
 
-router.get('/', (req,res) => {
+router.get('/', async (req,res) => {
     const payload = {
         pageTitle:'Setting',
         userLoggedIn:req.session.user,
         userLoggedInJs:JSON.stringify(req.session.user),
-        profilePic:JSON.stringify(req.session.user.profilePic)
+        profileUser:req.session.user
     }
     res.status(200).render('settingPage', payload)
 })
