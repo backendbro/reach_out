@@ -108,6 +108,8 @@ $("#submitReplyButton").click(async (event) => {
     })
 })
 
+
+
 $("#filePhoto").change(function(){
     if(this.files && this.files[0]){
         let reader = new FileReader()

@@ -188,6 +188,8 @@ button span {
     font-size: 19px;
 }
 
+
+
 #submitPostButton {
     background-color: var(--blue);
     color: white;
@@ -317,6 +319,11 @@ button span {
 
 .errorMessage {
     padding: var(--spacing);
+}
+
+.errorSettingMessage{
+    padding: var(--spacing);
+    text-decoration: underline;
 }
 
 .postImg{
@@ -579,6 +586,15 @@ ul,li{
  
     /* This rule is very important, please don't ignore this */
     max-width: 100%;
+}
+
+.settingsUsername{
+    padding:10px;
+    margin-left: 10px;
+}
+
+.settingsForm{
+    margin-top: -20px;
 }
 
 .pinButton.active {

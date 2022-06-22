@@ -53,39 +53,41 @@ html(lang="en")
                                         #account-general.tab-pane.fade.active.show
                                             .card-body.media.align-items-center
                                                 img.d-block.ui-w-80(src=profileUser.profilePic, alt='')
-                                                .media-body.ml-4
-                                                    label.btn.btn-outline-primary Upload new photo
-                                                        input.account-settings-fileinput(type='file')
-                                                    button.btn.btn-default.md-btn-flat(type='button') Reset
+                                                <h1 class="display-4 settingsUsername"> Hello, #{profileUser.username} </h1>
                                             .card-body
-                                                form(action="/api/settings/general", method="post") 
-                                                    .form-group
-                                                        label.form-label Username
-                                                        input.form-control.mb-1(type='text', name="username", placeholder='john_doe')
+                                                form.settingsForm(action="/api/settings/general", method="post") 
+                                                    div.errorSettingMessage #{errorMessage}
                                                     .form-group
                                                         label.form-label Full-Name
-                                                        input.form-control(type='text', name="full_name", placeholder='John Doe')
+                                                        input.form-control(type='text', value=full_name, name="full_name", placeholder=`${profileUser.full_name}`)
+                                                    .form-group
+                                                        label.form-label Username
+                                                        input.form-control.mb-1(type='text', value=username, name="username", placeholder=`${profileUser.username}`)
                                                     .form-group
                                                         label.form-label E-mail
-                                                        input.form-control.mb-1(type='text', name="email", placeholder='johndoe@mail.com')
+                                                        input.form-control.mb-1(type='text', name="email", value=email, placeholder=`${profileUser.email}`)
                                                     .form-group
-                                                        label.form-label Description
-                                                        textarea.form-control(name="description", placeholder="Enter a description about yourself")                                                
+                                                        label.form-label Description    
+                                                        textarea.settingsTextarea.form-control(name="description", value=description)                                                
                                                     .footer.text-right.mt-3
                                                         button.btn.btn-primary(type='submit') Save
                                                         button.btn.btn-default(type='button') Cancel
                                         #account-change-password.tab-pane.fade
                                             .card-body.pb-2
+                                            form.settingsForm(action="/api/settings/password", method="post") 
+                                                div.errorSettingMessage #{errorMessage}
                                                 .form-group
                                                 label.form-label Current password
-                                                input.form-control(type='password')
+                                                input.form-control(type='password' name="currentPassword")
                                                 .form-group
                                                 label.form-label New password
-                                                input.form-control(type='password')
+                                                input.form-control(type='password' name="newPassword")
                                                 .form-group
                                                 label.form-label Repeat new password
-                                                input.form-control(type='password')
-
+                                                input.form-control(type='password' name="repeatPassword")
+                                                .footer.text-right.mt-3
+                                                    button.btn.btn-primary(type='submit') Save
+                                                    button.btn.btn-default(type='button') Cancel
 
                 div.d-none.d-md-block.col-md-2.col-lg-4
 
