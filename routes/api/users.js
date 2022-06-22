@@ -31,7 +31,7 @@ router.post('/profilepicture', upload.single("profileImageUpload"), async (req,r
         const uploadedImage = await Cloudinary.uploader.upload(path)
         const urlPath = uploadedImage.url
         const user = await User.findByIdAndUpdate(userId, {profilePic:urlPath}, {new:true})
-
+        await user.save()
         res.sendStatus(200)
     }catch(error){
         console.log(error)
@@ -50,7 +50,7 @@ router.post('/coverpicture', upload.single("coverImageUpload"), async (req,res) 
         const uploadedImage = await Cloudinary.uploader.upload(path)
         const urlPath = uploadedImage.url
         const user = await User.findByIdAndUpdate(userId, {coverPic:urlPath}, {new:true})
-       
+        await user.save()
         res.sendStatus(200)
     }catch(error){
         console.log(error)

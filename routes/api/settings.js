@@ -2,9 +2,7 @@ const router = require('express').Router()
 const User = require('../../schemas/UserSchema')
 
 router.post('/general', async (req,res) => {
-   
-    const user = await User.findById(req.session.user._id)
-    const {full_name, username, email, description} = req.body
+    const {full_name, username, email} = req.body
     const payload = {
         pageTitle:'Setting',
         userLoggedIn:req.session.user,
@@ -12,24 +10,15 @@ router.post('/general', async (req,res) => {
         profileUser:req.session.user,
         full_name:full_name,
         username:username,
-        email:email,
-        description:description    
+        email:email 
     }
     
-    const newPayload = {
-        pageTitle:'Setting',
-        userLoggedIn:req.session.user,
-        userLoggedInJs:JSON.stringify(req.session.user)
-    }
 
     let settingsData = new Object()
     if(full_name){
         settingsData.full_name = full_name
     }
 
-    if(description){
-        settingsData.description = description
-    }
 
     if(username){
         const checkIfUserExists = await User.findOne({username:username})
@@ -88,9 +77,14 @@ router.post('/password', async (req,res) => {
     return res.status(404).render('settingPage', payload)
     }
 
+    try{
     user.password = newPassword
     await user.save()
-    res.status(200).render('settingPage', payload)
+    res.redirect('/setting')
+    }catch(error){
+        console.log(error)
+        res.sendStatus(404)
+    }
 })
 
 module.exports = router
