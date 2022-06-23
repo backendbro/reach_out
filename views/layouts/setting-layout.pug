@@ -66,6 +66,9 @@ html(lang="en")
                                                     .form-group
                                                         label.form-label E-mail
                                                         input.form-control.mb-1(type='text', name="email", value=email, placeholder=`${profileUser.email}`)
+                                                    .form-group
+                                                        label.form-label Description
+                                                        input.form-control.mb-1(type='text', name="description", value=description, placeholder=`${profileUser.description}`)
                                                     .footer.text-right.mt-3
                                                         button.btn.btn-primary(type='submit') Save
                                                         button.btn.btn-default(type='button') Cancel

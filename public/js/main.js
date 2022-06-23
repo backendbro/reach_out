@@ -1,6 +1,7 @@
 let data = new Object();
 let formData;
 let cropper;
+let timer
 
 $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
@@ -108,7 +109,50 @@ $("#submitReplyButton").click(async (event) => {
     })
 })
 
+$("#userSearchTextbox").keydown(event => {
+    clearTimeout(timer)
+    const textbox = $(event.target)
+    let value = textbox.val()
 
+    if(value == "" || (event.which == 8 || event.keyCode == 8 )){
+        $(".resultsContainer").html("");
+        return 
+    }
+
+    timer = setTimeout(() => {
+        value = textbox.val().trim()
+        if(value == ""){
+            return $(".resultsContainer").html("");
+        }else{
+            getUsers(value)
+        }
+    }, 1000)
+})
+
+function getUsers(value){
+    $.get(`/api/users`, {search:value}, userData => {
+        outputSelectedUsers(userData, $(".resultsContainer"))
+    })
+}
+
+function outputSelectedUsers(userData, container){
+    container.html("")
+
+    userData.forEach(user => {
+        //come back here nigga
+        
+        if(user._id == userLoggedIn._id){
+            return;
+        }
+
+        let html = createUserHtml(user)
+        container.append(html)
+    })
+
+    if(userData.length == 0){
+        container.append(`<span class="noResult">Nothing to show</span>`)
+    }
+}
 
 $("#filePhoto").change(function(){
     if(this.files && this.files[0]){
@@ -468,7 +512,9 @@ function createPostHtml(postData, comment=false) {
         pinName = "UN-PIN"
     }
 
-        button = `<button class=''>
+        button = `
+        <div class="dropDown">
+        <button>
         <nav class="buttonLink">
         <li class="hov"><i class="fas fa-ellipsis-v"></i>
           <ul class="mainLink">
@@ -477,7 +523,9 @@ function createPostHtml(postData, comment=false) {
           </ul>
         </li>
       </nav>
-      </button>`
+      </button>
+      </div>
+      `
     }
     
    

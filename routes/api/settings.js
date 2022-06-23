@@ -2,7 +2,7 @@ const router = require('express').Router()
 const User = require('../../schemas/UserSchema')
 
 router.post('/general', async (req,res) => {
-    const {full_name, username, email} = req.body
+    const {full_name, username, email, description} = req.body
     const payload = {
         pageTitle:'Setting',
         userLoggedIn:req.session.user,
@@ -10,7 +10,8 @@ router.post('/general', async (req,res) => {
         profileUser:req.session.user,
         full_name:full_name,
         username:username,
-        email:email 
+        email:email,
+        description:description
     }
     
 
@@ -19,6 +20,9 @@ router.post('/general', async (req,res) => {
         settingsData.full_name = full_name
     }
 
+    if(description){
+        settingsData.description = description
+    }
 
     if(username){
         const checkIfUserExists = await User.findOne({username:username})

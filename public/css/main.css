@@ -190,7 +190,7 @@ button span {
 
 
 
-#submitPostButton {
+#submitPostButton{
     background-color: var(--blue);
     color: white;
     border: none;
@@ -390,7 +390,6 @@ ul,li{
   -webkit-transform-origin: 50% 0%;
   -webkit-transform: perspective(350px) rotateX(-90deg);
 }
-
 .hov:hover .mainLink {
   
   -webkit-transform-origin: top;
@@ -638,4 +637,44 @@ ul,li{
     margin-left: 3px;
 }
 
+.chatPageContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+    flex-basis: 0;
+}
 
+.chatTitleBar {
+    border-bottom: 1px solid var(--lightGrey);
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    padding: 10px;
+}
+
+.chatTitleBar label {
+    margin: 0 10px 0 0;
+}
+
+#userSearchTextbox {
+    border: none;
+    flex: 1;
+    font-weight: 200;
+    min-width: 350px;
+}
+
+#createChatButtons {
+    border: none;
+    background-color: var(--blue);
+    color: #fff;
+    padding: 7px 20px;
+    margin: 10px auto;
+    border-radius: 40px;
+    display: inline-block;
+}
+
+#createChatButtons:disabled {
+    background-color: var(--lightGrey);
+    color: var(--greyText);
+}
