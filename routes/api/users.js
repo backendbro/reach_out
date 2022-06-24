@@ -5,12 +5,12 @@ const Cloudinary = require('../../cloudinary/cloudinary')
 
 
 router.get('/', async (req,res) => {
-    let queryString;
-    if(req.query.search !== undefined){
+    let queryString = req.query;
+    if(req.query.search !== undefined) {
         queryString = {
-            $or : [
-                {full_name:{$regex:req.query.search, $options:'i'}},
-                {username:{$regex:req.query.search, $options:'i'}}
+            $or: [
+                { full_name: { $regex: req.query.search, $options: "i" }},
+                { username: { $regex: req.query.search, $options: "i" }}
             ]
         }
     }

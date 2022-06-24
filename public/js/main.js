@@ -2,6 +2,7 @@ let data = new Object();
 let formData;
 let cropper;
 let timer
+let selectedUsers = []
 
 $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
@@ -113,45 +114,83 @@ $("#userSearchTextbox").keydown(event => {
     clearTimeout(timer)
     const textbox = $(event.target)
     let value = textbox.val()
+    $("#createChatButton").prop('disabled', false)
 
-    if(value == "" || (event.which == 8 || event.keyCode == 8 )){
+    if(value == "" && (event.which == 8 || event.keyCode == 8 )){
+        selectedUsers.pop()
+        updateSelectedUsers()
         $(".resultsContainer").html("");
+
+        if(selectedUsers.length == 0){
+            $("#createChatButton").prop('disabled', true)
+        }
         return 
     }
 
     timer = setTimeout(() => {
-        value = textbox.val().trim()
-        if(value == ""){
-            return $(".resultsContainer").html("");
+        const data = textbox.val().trim()
+        if(data == ""){
+            $(".resultsContainer").html("")
         }else{
-            getUsers(value)
+            getUsers(data)
         }
-    }, 1000)
+   }, 1000)
 })
 
-function getUsers(value){
-    $.get(`/api/users`, {search:value}, userData => {
+$("#createChatButton").click(async event => {
+    const data = JSON.stringify(selectedUsers)
+    $.post(`/api/chats`, {users:data}, chatData => {
+        console.log('Ok')
+        window.location.href = `/messages/${chatData._id}`
+    })
+})
+
+function getUsers(searchTerm){
+    $.get(`/api/users`, {search:searchTerm}, userData => {
         outputSelectedUsers(userData, $(".resultsContainer"))
     })
 }
 
-function outputSelectedUsers(userData, container){
-    container.html("")
+function outputSelectedUsers(results, container) {
+    container.html("");
 
-    userData.forEach(user => {
-        //come back here nigga
+    results.forEach(result => {
         
-        if(user._id == userLoggedIn._id){
+        if(result._id == userLoggedIn._id || selectedUsers.some(u => u._id == result._id)) {
             return;
         }
 
-        let html = createUserHtml(user)
-        container.append(html)
+        const html = createUserHtml(result, false);
+        const element = $(html);
+        element.click(() => userSelected(result))
+
+        container.append(element);
+    });
+
+    if(results.length == 0) {
+        container.append("<span class='noResults'>No results found</span>")
+    }
+}
+
+function userSelected(user){
+    selectedUsers.push(user)
+    updateSelectedUsers()
+    $("#userSearchTextbox").val("").focus()
+    $(".resultsContainer").html("")
+    $("#createChatButton").prop('disabled', false)   
+}
+
+function updateSelectedUsers(){
+    let elements = []
+
+    selectedUsers.forEach(user => {
+        const name = user.full_name
+        const userElement = $(`<span class="selectedUser">${name}</span>`)
+        elements.push(userElement)
     })
 
-    if(userData.length == 0){
-        container.append(`<span class="noResult">Nothing to show</span>`)
-    }
+    $('.selectedUser').remove()
+    $('#selectedUsers').prepend(elements)
 }
 
 $("#filePhoto").change(function(){
