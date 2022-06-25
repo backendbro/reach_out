@@ -1,8 +1,15 @@
 const router = require('express').Router()
 let Chat = require('../../schemas/ChatSchema')
+let User = require('../../schemas/UserSchema')
 
-router.get('/hello', (req,res) => {
-    console.log('Hello world')
+router.get('/', async (req,res) => {
+    let results = await Chat.find({users:{ $elemMatch:{$eq: req.session.user._id } }})
+    .populate('users')
+    .populate('recentMessage')
+    .sort({'updatedAt':-1})
+
+    results = await User.populate(results, {path:'recentMessage.sender'})
+    res.status(200).json(results)
 })
 
 router.post('/', async (req,res) => {
