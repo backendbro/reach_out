@@ -39,7 +39,8 @@ router.get('/:chatId', async (req,res) => {
     }
 
     let chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
-    
+    .populate('users')
+
     if(chat == null){
      payload.errorMessage('Chat does not exist')   
     }else{

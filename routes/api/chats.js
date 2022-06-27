@@ -12,6 +12,14 @@ router.get('/', async (req,res) => {
     res.status(200).json(results)
 })
 
+router.get('/:chatId', async (req,res) => {
+    const chatId = req.params.chatId
+    const userId = req.session.user._id
+    const chat = await Chat.findOne({_id:chatId, users: {$elemMatch: { $eq: userId } } })
+    .populate('users')
+    res.status(200).send(chat)
+})
+
 router.post('/', async (req,res) => {
     if(!req.body.users){
         console.log(`Request header is empty`)
@@ -41,5 +49,11 @@ router.post('/', async (req,res) => {
 
 })
 
+router.put('/:chatId', async (req,res) => {
+    const chatId = req.params.chatId
+    const chatName = req.body.chatName
+    let chat = await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
+    res.sendStatus(200)
+})
 
 module.exports = router
