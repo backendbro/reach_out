@@ -44,6 +44,7 @@ router.get('/:chatId', async (req,res) => {
     if(chat == null){
      payload.errorMessage('Chat does not exist')   
     }else{
+    payload.group = chat.groupOwner 
     payload.chat = chat
     }
     res.status(200).render('chatPage', payload)

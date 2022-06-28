@@ -5,7 +5,6 @@ const User = require('../../schemas/UserSchema')
 const router = require('express').Router()
 
 router.post('/', async (req,res) => {
-    console.log('Hello world')
    if(!req.body.content && !req.body.chatId){
     console.log(`Request header cannot be empty`)
     return
@@ -22,22 +21,23 @@ router.post('/', async (req,res) => {
     }
 
     try{
+        Message.create(messageData)
+        .then(async message => {
+            message = await message.populate('sender').execPopulate()
+            message = await message.populate('chat').execPopulate()
+            message = await User.populate(message, {path:'chat.users'})
 
-    let message = Message.create(messageData)
-    .populate('sender').execPopulate()
-    .populate('chat').execPopulate()
-    
-    message = await User.populate(message, {path:'chat.users'})
-    
-    const chat = await Chat.findByIdAndUpdate(chatId, {recentMessage:message})
-    res.status(200).send(message)
-
+            
+        const chat = await Chat.findByIdAndUpdate(chatId, {recentMessage:message})
+        res.status(200).send(message)
+        })
     }catch(error){
         console.log(error)
         res.sendStatus(404)
     }
 
 })
+
 
 
 module.exports = router

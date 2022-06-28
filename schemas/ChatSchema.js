@@ -5,6 +5,7 @@ const ChatSchema = new Schema({
     chatName:{type:String},
     isGroup:{type:Boolean, default:false},
     users:[{type:Schema.Types.ObjectId, ref:'User'}],
+    groupOwner:{type:Schema.Types.ObjectId, ref:'User'},
     recentMessage:{type:Schema.Types.ObjectId, ref:'Message'}
 },{timestamps:true})
 

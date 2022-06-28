@@ -81,6 +81,20 @@ mixin createPinnedPostModal()
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
                     button#pinPostButton.btn.btn-primary(type='button') Pin
 
+mixin createPinnedPostModal()
+    #leaveGroupModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='confirmPinModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#leaveGroupPinModalLabel.modal-title Leave this group?
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                .modal-body
+                    p Clicking leave, Will make you exit this group. Are you sure?
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+                    button#pinPostButton.btn.btn-primary(type='button') Leave 
+                    
 mixin createUnpinPostModal()
     #unpinModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='unpinModalLabel', aria-hidden='true')
         .modal-dialog(role='document')

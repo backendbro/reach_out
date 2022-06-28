@@ -6,23 +6,23 @@ block content
         span.errorMessage #{errorMessage}
     else 
         script.
-            var chatId = '!{chat._id}';
-
+            let chatId = '!{chat._id}';
+        - let chatOwner = group
         .chatPageContainer
             .chatTitleBarContainer
                 +createChatImage(chat, userLoggedIn)
-                span#chatName(data-toggle="modal", data-target="#chatNameModal") 
-            
+                span#chatName(data-toggle="modal", data-target="#chatNameModal")
+                if userLoggedIn._id !== chatOwner
+                    span#leaveGroup.i.fas.fa-sign-out-alt(data-toggle="modal", data-target="#leaveGroupModal")
             .mainContentContainer
-                .loadingSpinnerContainer
-                    img(src="/images/loadingSpinner.gif", alt="Loading spinner")
-                .chatContainer(style="visibility: hidden")
-                    ul.chatMessages
+                .chatContainer
+                    .chatMessages
                     .footer
                         textarea.inputTextbox(name="messageInput", placeholder="Type a message...")
                         button.sendMessageButton
                             i.fas.fa-paper-plane
         +createChatNameModal(chat)
+        +createPinnedPostModal()
 
 block scripts
     script(src="/js/chatPage.js")

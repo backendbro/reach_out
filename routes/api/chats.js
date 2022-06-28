@@ -1,6 +1,7 @@
 const router = require('express').Router()
 let Chat = require('../../schemas/ChatSchema')
 let User = require('../../schemas/UserSchema')
+let Message = require('../../schemas/MessageSchema')
 
 router.get('/', async (req,res) => {
     let results = await Chat.find({users:{ $elemMatch:{$eq: req.session.user._id } }})
@@ -39,8 +40,14 @@ router.post('/', async (req,res) => {
         users,
         isGroup:true
     }
+
+    if(chatData.isGroup == true){
+        chatData.groupOwner = req.session.user._id
+    }
+
     try{
     const chat = await Chat.create(chatData)
+    console.log(chat)
     res.status(200).send(chat)
     }catch(error){
         console.log(error)
@@ -54,6 +61,12 @@ router.put('/:chatId', async (req,res) => {
     const chatName = req.body.chatName
     let chat = await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
     res.sendStatus(200)
+})
+
+router.get('/:chatId/messages', async (req,res) => {
+    const messages = await Message.find({chat:req.params.chatId})
+    .populate('sender')
+    res.status(200).send(messages)
 })
 
 module.exports = router
