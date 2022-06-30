@@ -27,7 +27,7 @@ ul{
     margin: 0;
 }
 
-* {
+    * {
     outline: none !important;
 }
 
@@ -848,15 +848,24 @@ ul,li{
     display: flex;
     align-items: flex-end;
     flex-shrink: 0;
-    -webkit-flex: 0;
 }
-
+.typingDots img,
 .chatMessages .message .messageBody {
     background-color: #f1f0f0;
     padding: 6px 12px;
     border-radius: 18px;
     font-size: 14px;
     margin-bottom:-10px;
+}
+
+.typingDots img{
+    height: 35px;
+}
+.typingDots {
+    padding: var(--spacing);
+    padding-bottom: 5px;
+    display: none;
+    background: transparent;
 }
 
 .chatMessages .message .messageContainer {
@@ -946,4 +955,13 @@ ul,li{
 .loadingSpinnerContainer img {
     width: 50%;
     max-width: 75px;
+}
+
+.deleteChat{
+    display: flex;
+}
+
+#leaveGroup{
+    color: blue;
+    font-size: 25px;
 }

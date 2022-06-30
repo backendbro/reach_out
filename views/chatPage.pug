@@ -7,22 +7,31 @@ block content
     else 
         script.
             let chatId = '!{chat._id}';
-        - let chatOwner = group
+        
         .chatPageContainer
             .chatTitleBarContainer
                 +createChatImage(chat, userLoggedIn)
                 span#chatName(data-toggle="modal", data-target="#chatNameModal")
-                if userLoggedIn._id !== chatOwner
-                    span#leaveGroup.i.fas.fa-sign-out-alt(data-toggle="modal", data-target="#leaveGroupModal")
+                if isGroupChat == true
+                    if group == userLoggedIn._id
+                        span#leaveGroup.i.fas.fa-trash(data-toggle="modal", data-target="#deleteGroupModal")
+                    else
+                        span#leaveGroup.i.fas.fa-sign-out-alt(data-toggle="modal", data-target="#leaveGroupModal")
             .mainContentContainer
-                .chatContainer
-                    .chatMessages
+                .loadingSpinnerContainer
+                    img(src="/images/loadingSpinner.gif", alt="Loading spinner")
+                .chatContainer(style="visibility: hidden")
+                    ul.chatMessages
+
+                    .typingDots
+                        img(src="/images/dots.gif", alt="Typing dots")
                     .footer
                         textarea.inputTextbox(name="messageInput", placeholder="Type a message...")
                         button.sendMessageButton
                             i.fas.fa-paper-plane
         +createChatNameModal(chat)
-        +createPinnedPostModal()
+        +leaveGroupModal()
+        +deleteGroupModal()
 
 block scripts
     script(src="/js/chatPage.js")

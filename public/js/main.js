@@ -207,7 +207,6 @@ function outputChatList(chatData, container){
     }
 }
 
-
 function createChatHtml(chatData) {
     let chatName = getChatName(chatData);
     let image = getChatImageElements(chatData);
@@ -215,13 +214,20 @@ function createChatHtml(chatData) {
 
     let activeClass = !chatData.recentMessage || chatData.recentMessage.readBy.includes(userLoggedIn._id) ? "" : "active";
     
-    return `<a href='/messages/${chatData._id}' class='resultListItem ${activeClass}'>
+
+
+    return `<div class="chat" data-id='${chatData._id}'>
+        <a class='resultListItem ${activeClass}' href="/messages/${chatData._id}">
                 ${image}
                 <div class='resultsDetailsContainer ellipsis'>
                     <span class='heading ellipsis'>${chatName}</span>
                     <span class='subText ellipsis'>${recentMessage}</span>
                 </div>
-            </a>`;
+               
+            </a>
+    </div>
+    
+    `;
 }
 
 function getChatName(chatData){
@@ -833,4 +839,12 @@ function displayPostData(postData, container, textbox, button){
     container.prepend(html)
     textbox.val("")
     button.prop('disabled', true)
+}
+
+function newMessageRecieved(newMessage){
+    if($(".chatContainer").length == 0){
+        // show pop up notification
+    }else{
+        addMessageToChat(newMessage)
+    }
 }

@@ -7,7 +7,14 @@ const session = require("express-session");
 const dotenv = require('dotenv')
 
 dotenv.config()
+const server = app.listen(process.env.port, () =>{ 
+    console.log(`Server listening on port  ${process.env.port}`)});
+const io = require('socket.io')(server, {pingTimeout: 60000})
+
+
 connectDb()
+
+
 
 app.set("view engine", "pug");
 app.set("views", "views");
@@ -20,10 +27,6 @@ app.use(session({
     resave: true,
     saveUninitialized: false
 }))
-
-
-const server = app.listen(process.env.port, () =>{ 
-    console.log(`Server listening on port  ${process.env.port}`)});
 
 
 // Routes
@@ -67,4 +70,26 @@ app.get("/", middleware.requireLogin, (req, res, next) => {
     }
     res.status(200).render("home", payload);
 })
+
+io.on('connection', socket => {
+    socket.on('setup', userData => {
+       socket.join(userData._id)
+       socket.emit('connected')
+    })
+
+    socket.on("join room", chatRoom => socket.join(chatRoom));
+    socket.on("typing", chatRoom => socket.in(chatRoom).emit("typing"));
+    socket.on("stop typing", chatRoom => socket.in(chatRoom).emit("stop typing"));
+    
+    socket.on("new message", newMessage  => {
+        let chat = newMessage.chat
+        if(!chat.users) return console.log('Chat.users is empty')
+        
+        chat.users.forEach(user => {
+            if(user._id == newMessage.sender._id) return 
+            socket.in(user._id).emit('message recieved', newMessage)
+        })
+    });
+})
+
 

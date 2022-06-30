@@ -81,8 +81,8 @@ mixin createPinnedPostModal()
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
                     button#pinPostButton.btn.btn-primary(type='button') Pin
 
-mixin createPinnedPostModal()
-    #leaveGroupModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='confirmPinModalLabel', aria-hidden='true')
+mixin leaveGroupModal()
+    #leaveGroupModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='leaveGroupModalLabel', aria-hidden='true')
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
@@ -93,8 +93,22 @@ mixin createPinnedPostModal()
                     p Clicking leave, Will make you exit this group. Are you sure?
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#pinPostButton.btn.btn-primary(type='button') Leave 
-                    
+                    button#leaveGroupButton.btn.btn-primary(type='button') Leave 
+
+mixin deleteGroupModal()
+    #deleteGroupModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteGroupModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#leaveGroupPinModalLabel.modal-title Delete this chat?
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                .modal-body
+                    p This chat will be deleted and messages will be gone.
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+                    button#deleteGroupButton.btn.btn-primary(type='button') Delete 
+
 mixin createUnpinPostModal()
     #unpinModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='unpinModalLabel', aria-hidden='true')
         .modal-dialog(role='document')

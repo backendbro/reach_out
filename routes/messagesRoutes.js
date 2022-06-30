@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const Chat = require('../schemas/ChatSchema')
 const mongoose = require('mongoose')
+const User = require('../schemas/UserSchema')
 
 router.get('/', (req,res) => {
     const payload = {
@@ -41,14 +42,51 @@ router.get('/:chatId', async (req,res) => {
     let chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
     .populate('users')
 
+
+    if(chat == null){
+        const checkByUser = await User.findById(chatId)
+
+
+        if(checkByUser !== null){
+            chat = await getChatByUserId(checkByUser._id, userId)
+            console.log(chat)
+        }
+    }
+
     if(chat == null){
      payload.errorMessage('Chat does not exist')   
     }else{
     payload.group = chat.groupOwner 
+    payload.isGroupChat = chat.isGroup
     payload.chat = chat
     }
+    
     res.status(200).render('chatPage', payload)
     
 })
+
+async function getChatByUserId(otherUser, userLoggedIn){
+    return await Chat.findOneAndUpdate({
+        isGroup:false, 
+        users:{
+            $size:2,
+            $all:[
+                {$elemMatch:{$eq: mongoose.Types.ObjectId(otherUser) }},
+                {$elemMatch:{$eq: mongoose.Types.ObjectId(userLoggedIn) }}
+            ]
+        }
+    },
+    {
+        $setOnInsert:{
+            users:[otherUser, userLoggedIn]
+        }
+    },
+    {
+        new:true,
+        upsert:true
+    })
+    .populate('users')
+}
+
 
 module.exports = router

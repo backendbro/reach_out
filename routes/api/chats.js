@@ -3,6 +3,7 @@ let Chat = require('../../schemas/ChatSchema')
 let User = require('../../schemas/UserSchema')
 let Message = require('../../schemas/MessageSchema')
 
+
 router.get('/', async (req,res) => {
     let results = await Chat.find({users:{ $elemMatch:{$eq: req.session.user._id } }})
     .populate('users')
@@ -47,7 +48,6 @@ router.post('/', async (req,res) => {
 
     try{
     const chat = await Chat.create(chatData)
-    console.log(chat)
     res.status(200).send(chat)
     }catch(error){
         console.log(error)
@@ -67,6 +67,35 @@ router.get('/:chatId/messages', async (req,res) => {
     const messages = await Message.find({chat:req.params.chatId})
     .populate('sender')
     res.status(200).send(messages)
+})
+
+router.put('/:chatId/leave', async (req,res) => {
+    const userId = req.body.userId
+    const chatId = req.params.chatId
+    let chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
+    if(!chat){
+        console.log('You cannot leave a room where you do not exist')
+        return res.sendStatus(404)
+    }
+
+    chat = await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
+    res.sendStatus(200)
+})
+
+
+router.delete('/:chatId/delete', async (req,res) => {
+    const userId = req.body.userId
+    const chatId = req.params.chatId
+    let chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
+
+    if(!chat){
+        console.log('You cannot leave a room where you do not exist')
+        return res.sendStatus(404)  
+    }
+    await Chat.deleteOne({_id:chatId})
+    await Message.deleteMany({ chat: chatId})
+
+    res.sendStatus(200)
 })
 
 module.exports = router

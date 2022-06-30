@@ -1,10 +1,14 @@
-console.log(typeof userLoggedIn._id)
-console.log(typeof chatOwner)
-
 let lastTypingTime 
 let typing = false
 
 $(document).ready(() => {
+
+    socket.emit("join room", chatId);
+    socket.on("typing", () => $(".typingDots").show());
+    socket.on("stop typing", () => $(".typingDots").hide());
+
+    
+
     $.get(`/api/chats/${chatId}`, (data) =>{ 
         $("#chatName").text(getChatName(data))
     })
@@ -59,8 +63,10 @@ $(".inputTextbox").keydown(event => {
 })
 
 function updateTyping(){
+    if(!connected) return;
     if(!typing) {
         typing = true;
+        socket.emit("typing", chatId);
     }
 
     lastTypingTime = new Date().getTime();
@@ -71,6 +77,7 @@ function updateTyping(){
         let timeDiff = timeNow - lastTypingTime;
 
         if(timeDiff >= timerLength && typing) {
+            socket.emit('stop typing', chatId)
             typing = false;
         }
     }, timerLength);
@@ -81,6 +88,7 @@ function messageSubmitted(){
     if(content){
         sendMessage(content)
         $(".inputTextbox").val("")
+        socket.emit('stop typing', chatId)
         typing=false
     }
 }
@@ -97,6 +105,10 @@ async function sendMessage(content){
     data:post,
     success:(messageData)=>{
         addMessageToChat(messageData)
+    
+        if(connected){
+            socket.emit('new message', messageData)
+        }
     } 
 })
 }
@@ -169,3 +181,32 @@ function scrollToBottom(animated) {
         container.scrollTop(scrollHeight);
     }
 }
+
+
+$("#leaveGroupButton").click(() => {
+    $.ajax({
+        url:`/api/chats/${chatId}/leave`,
+        type:'PUT',
+        data:{userId:userLoggedIn._id},
+        success:(data, status, xhr) => {
+        if(xhr.status != 200){
+            alert('Could not leave, Retry')
+        }
+       window.location.href = `/messages`
+        }
+    })
+})
+
+$("#deleteGroupButton").click(() => { 
+    $.ajax({
+        url:`/api/chats/${chatId}/delete`,
+        type:'DELETE',
+        data:{userId:userLoggedIn._id},
+        success:(data, status, xhr) => {
+        if(xhr.status != 200){
+            alert('Could not leave, Retry')
+        }
+       window.location.href = `/messages`
+        }
+    })
+})
