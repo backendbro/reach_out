@@ -2,6 +2,7 @@ const router = require('express').Router()
 const User = require('../../schemas/UserSchema')
 const upload = require('../../multer/upload')
 const Cloudinary = require('../../cloudinary/cloudinary')
+const Notification = require('../../schemas/NotificationSchema')
 
 
 router.get('/', async (req,res) => {
@@ -73,7 +74,10 @@ router.put('/:userId/follow', async (req,res) => {
     })
 
     await User.findByIdAndUpdate(userId, { [option]: {followers: userLoggedIn} }, {new:true})
-    .then((user) => {
+    .then(async (user) => {
+        if(!isFollowing){
+            await Notification.createNotification(user._id, req.session.user._id, 'follow', user._id)
+            }
         res.status(200).json(user)
     })
     .catch(error => {

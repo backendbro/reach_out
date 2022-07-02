@@ -848,3 +848,130 @@ function newMessageRecieved(newMessage){
         addMessageToChat(newMessage)
     }
 }
+
+
+////////// ============ NOTIFICATION ============ ///////////
+
+function outputNotifications(results, container){
+    container.html('')
+
+    results.forEach(result => {
+        const html = createNotificationHtml(result)
+        container.append(html)
+    })
+
+    if(results.length == 0){
+        container.append(`<span class="noResult">Nothing to Show </span>`)
+    }
+}
+
+function createNotificationHtml(notification) {
+    let userFrom = notification.userFrom;
+    let text = getNotificationText(notification);
+    let href = getNotificationUrl(notification);
+    let className = notification.opened ? "" : "active";
+    console.log(notification._id)
+    return `<a href='${href}' class='resultListItem notification ${className}' data-id='${notification._id}'>
+                <div class='resultsImageContainer'>
+                    <img src='${userFrom.profilePic}'>
+                </div>
+                <div class='resultsDetailsContainer ellipsis'>
+                    <span class='ellipsis'>${text}</span>
+                </div>
+            </a>`;
+}
+
+function getNotificationText(notification) {
+
+    let userFrom = notification.userFrom;
+
+    if(!userFrom.full_name) {
+        return alert("user from data not populated");
+    }
+
+    let userFromName = `${userFrom.full_name}`;
+
+    let text;
+
+    if(notification.notificationType == "shared") {
+        text = `${userFromName} shared one of your posts`;
+    }
+    else if(notification.notificationType == "like") {
+        text = `${userFromName} liked one of your posts`;
+    }
+    else if(notification.notificationType == "reply") {
+        text = `${userFromName} replied to one of your posts`;
+    }
+    else if(notification.notificationType == "follow") {
+        text = `${userFromName} followed you`;
+    }
+
+    return `<span class='ellipsis'>${text}</span>`;
+}
+
+function getNotificationUrl(notification) { 
+    let url = "#";
+
+    if(notification.notificationType == "shared" || 
+        notification.notificationType == "like" || 
+        notification.notificationType == "reply") {
+            
+        url = `/post/${notification.entityId}`;
+    }
+    else if(notification.notificationType == "follow") {
+        url = `/profile/${notification.entityId}`;
+    }
+
+    return url;
+}
+
+$(document).on('click', ".notification.active", (e) => {
+    const container = $(e.target);
+    const notificationId = container.data().id
+    console.log(notificationId)
+ 
+
+    var href = container.attr("href");
+    e.preventDefault();
+
+    var callback = () => window.location = href;
+    markNotificationsAsOpened(container.data().id, callback);
+})
+ 
+
+function markNotificationsAsOpened(notificationId = null, callback = null) {
+    if(callback == null) callback = () => location.reload();
+
+    var url = notificationId != null ? `/api/notifications/${notificationId}/markAsOpened` : `/api/notifications/markAsOpened`;
+    $.ajax({
+        url: url,
+        type: "PUT",
+        success: () => callback()
+    })
+}
+
+// function refreshNotificationsBadge() {
+//     $.get("/api/notifications", { unreadOnly: true }, (data) => {
+        
+//         let numResults = data.length;
+
+//         if(numResults > 0) {
+//             $("#notificationBadge").text(numResults).addClass("active");
+//         }
+//         else {
+//             $("#notificationBadge").text("").removeClass("active");
+//         }
+
+//     })
+// }
+
+// function showNotificationPopup(data) {
+//     var html = createNotificationHtml(data);
+//     var element = $(html);
+//     element.hide().prependTo("#notificationList").slideDown("fast");
+
+//     setTimeout(() => element.fadeOut(400), 5000);
+// }
+
+
+////////// ============ NOTIFICATION ============ ///////////

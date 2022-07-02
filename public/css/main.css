@@ -965,3 +965,49 @@ ul,li{
     color: blue;
     font-size: 25px;
 }
+
+
+.resultListItem.active {
+    background-color: var(--blueBackground);
+}
+
+.resultListItem.notification * {
+    pointer-events: none;
+}
+
+#notificationBadge,
+#messagesBadge {
+    background-color: var(--red);
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+
+#notificationBadge.active,
+#messagesBadge.active {
+    visibility: visible;
+}
+
+#notificationList {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 350px;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+#notificationList .active {
+    background-color: white;
+}

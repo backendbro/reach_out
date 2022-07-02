@@ -3,6 +3,7 @@ const User = require('../../schemas/UserSchema');
 const Post = require('../../schemas/PostSchema');
 const upload = require('../../multer/upload')
 const Cloudinary = require('../../cloudinary/cloudinary')
+const Notification = require('../../schemas/NotificationSchema')
 
 router.get("/", async (req, res) => {
     const queryString = req.query
@@ -28,6 +29,7 @@ router.get("/", async (req, res) => {
 })
 
 router.get('/:postId', async(req,res) => {
+  
     const postId = req.params.postId
     
     let postData = await getPosts({_id:postId})
@@ -36,10 +38,15 @@ router.get('/:postId', async(req,res) => {
     let results = {
         postData:postData
     }
+    //HANDLE POST DELETED
+    // if(postData == undefined){
+    //     postData = 'Deleted'
+    // }
 
+    
     if(postData.replyTo !== undefined){
         results.replyTo = postData.replyTo
-    }   
+    }  
 
     results.replies = await getPosts({replyTo:postId})
 
@@ -88,8 +95,10 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
          let normPost = await Post.create(postData)
          normPost = await User.populate(normPost, {path: 'postedBy'})
          normPost = await Post.populate(normPost, {path:'replyTo'})
-         return res.status(200).send(normPost)  
-        
+         if(normPost.replyTo !== undefined){
+          await Notification.createNotification(normPost.replyTo.postedBy, req.session.user._id, 'Reply', normPost._id) 
+        }
+         return res.status(200).send(normPost)     
         }
     }catch(error){
         console.log(error)
@@ -98,7 +107,6 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
 })
 
 router.put('/:postId', async(req,res) => {  
-    console.log('This is from pinned post.')
     if(req.body.pinned !== undefined) {
         await Post.updateMany({postedBy: req.session.user }, { pinned: false })
         .catch(error => {
@@ -139,10 +147,12 @@ router.put("/:id/like", async (req, res) => {
         res.sendStatus(400);
     })
 
+    if(!isLiked){
+        await Notification.createNotification(post.postedBy, userId, 'like', post._id)
+    }
 
     res.status(200).send(post)
 })
-
 
 router.post("/:id/share", async (req, res) => {
     const postId = req.params.id;
@@ -175,13 +185,15 @@ router.post("/:id/share", async (req, res) => {
     })
 
     // Insert post like
-    var post = await Post.findByIdAndUpdate(postId, { [option]: { sharedUsers: userId } }, { new: true })
+    let post = await Post.findByIdAndUpdate(postId, { [option]: { sharedUsers: userId } }, { new: true })
     .catch(error => {
         console.log(error);
         res.sendStatus(400);
     })
 
-
+    if(!checkIfPostExist){
+       await Notification.createNotification(post.postedBy, userId, 'shared', post._id)  
+    }   
     res.status(200).send(post)
 })
 
