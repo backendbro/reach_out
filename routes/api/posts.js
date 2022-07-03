@@ -6,7 +6,7 @@ const Cloudinary = require('../../cloudinary/cloudinary')
 const Notification = require('../../schemas/NotificationSchema')
 
 router.get("/", async (req, res) => {
-    const queryString = req.query
+    let queryString = req.query
     if(queryString.getReply !== undefined){
         const getReply = queryString.getReply
         queryString.replyTo = {$exists:getReply}
@@ -22,6 +22,23 @@ router.get("/", async (req, res) => {
     if(queryString.search !== undefined){
         queryString.post = {$regex: queryString.search, $options:'i'}
         delete queryString.search
+    }
+
+    if(queryString.showOnlyFollowingPost !== undefined){
+        const following = queryString.showOnlyFollowingPost
+        if(following){
+            const objectIds = []
+
+            if(req.session.user.following){
+               req.session.user.following.forEach(following => {
+                objectIds.push(following)
+               })
+            }
+            
+            objectIds.push(req.session.user._id)
+            queryString.postedBy = {$in:objectIds}
+            delete queryString.showFollower
+        }
     }
 
     let results = await getPosts(queryString)
@@ -141,15 +158,17 @@ router.put("/:id/like", async (req, res) => {
     })
 
     // Insert post like
-    var post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true})
+    let post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true})
     .catch(error => {
         console.log(error);
         res.sendStatus(400);
     })
 
-    if(!isLiked){
-        await Notification.createNotification(post.postedBy, userId, 'like', post._id)
-    }
+    if(req.session.user._id.toString() !== post.postedBy.toString()){
+        if(isLiked == false){
+            await Notification.createNotification(post.postedBy, userId, 'like', post._id)
+    }}
+ 
 
     res.status(200).send(post)
 })
@@ -189,11 +208,13 @@ router.post("/:id/share", async (req, res) => {
     .catch(error => {
         console.log(error);
         res.sendStatus(400);
-    })
+    }) 
 
-    if(!checkIfPostExist){
-       await Notification.createNotification(post.postedBy, userId, 'shared', post._id)  
-    }   
+    if(req.session.user._id.toString() !== post.postedBy.toString()){
+        if(checkIfPostExist == null){
+            await Notification.createNotification(post.postedBy, userId, 'shared', post._id)
+    }}
+
     res.status(200).send(post)
 })
 

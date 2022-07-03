@@ -4,6 +4,12 @@ let cropper;
 let timer
 let selectedUsers = []
 
+
+$(document).ready(() => {
+    refreshNotificationsBadge()
+    refreshMessagesBadge()
+})
+
 $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
     const value = textbox.val().trim();
@@ -213,7 +219,6 @@ function createChatHtml(chatData) {
     let recentMessage = getRecentMessage(chatData.recentMessage);
 
     let activeClass = !chatData.recentMessage || chatData.recentMessage.readBy.includes(userLoggedIn._id) ? "" : "active";
-    
 
 
     return `<div class="chat" data-id='${chatData._id}'>
@@ -849,7 +854,19 @@ function newMessageRecieved(newMessage){
     }
 }
 
+function refreshMessagesBadge() {
+    $.get("/api/chats", { unreadOnly: true }, (data) => {
+        var numResults = data.length;
 
+        if(numResults > 0) {
+            $("#messagesBadge").text(numResults).addClass("active");
+        }
+        else {
+            $("#messagesBadge").text("").removeClass("active");
+        }
+
+    })
+}
 ////////// ============ NOTIFICATION ============ ///////////
 
 function outputNotifications(results, container){
@@ -870,7 +887,7 @@ function createNotificationHtml(notification) {
     let text = getNotificationText(notification);
     let href = getNotificationUrl(notification);
     let className = notification.opened ? "" : "active";
-    console.log(notification._id)
+    
     return `<a href='${href}' class='resultListItem notification ${className}' data-id='${notification._id}'>
                 <div class='resultsImageContainer'>
                     <img src='${userFrom.profilePic}'>
@@ -928,21 +945,19 @@ function getNotificationUrl(notification) {
 $(document).on('click', ".notification.active", (e) => {
     const container = $(e.target);
     const notificationId = container.data().id
-    console.log(notificationId)
- 
 
-    var href = container.attr("href");
+    let href = container.attr("href");
     e.preventDefault();
 
-    var callback = () => window.location = href;
-    markNotificationsAsOpened(container.data().id, callback);
+    let callback = () => window.location = href;
+    markNotificationsAsOpened(notificationId, callback);
 })
  
-
 function markNotificationsAsOpened(notificationId = null, callback = null) {
+   
     if(callback == null) callback = () => location.reload();
 
-    var url = notificationId != null ? `/api/notifications/${notificationId}/markAsOpened` : `/api/notifications/markAsOpened`;
+    let url = notificationId != null ? `/api/notifications/${notificationId}/markAsOpened` : `/api/notifications/markAsOpened`;
     $.ajax({
         url: url,
         type: "PUT",
@@ -950,20 +965,19 @@ function markNotificationsAsOpened(notificationId = null, callback = null) {
     })
 }
 
-// function refreshNotificationsBadge() {
-//     $.get("/api/notifications", { unreadOnly: true }, (data) => {
+function refreshNotificationsBadge() {
+    $.get("/api/notifications", { unreadOnly: true }, (data) => {
         
-//         let numResults = data.length;
+        let numResults = data.length;
+        if(numResults > 0) {
+            $("#notificationBadge").text(numResults).addClass("active");
+        }
+        else {
+            $("#notificationBadge").text("").removeClass("active");
+        }
 
-//         if(numResults > 0) {
-//             $("#notificationBadge").text(numResults).addClass("active");
-//         }
-//         else {
-//             $("#notificationBadge").text("").removeClass("active");
-//         }
-
-//     })
-// }
+    })
+}
 
 // function showNotificationPopup(data) {
 //     var html = createNotificationHtml(data);

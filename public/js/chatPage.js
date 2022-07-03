@@ -26,7 +26,8 @@ $(document).ready(() => {
 
         var messagesHtml = messages.join("");
         addMessagesHtmlToPage(messagesHtml);
-        scrollToBottom(false);
+        scrollToBottom(true);
+        markMessagesAsRead()
     })
 
     $('.loadingSpinnerContainer').remove()
@@ -174,7 +175,9 @@ function scrollToBottom(animated) {
     let container = $(".chatMessages");
     let scrollHeight = container[0].scrollHeight;
 
+
     if(animated) {
+        console.log('Hello')
         container.animate({ scrollTop: scrollHeight }, "slow");
     }
     else {
@@ -182,6 +185,14 @@ function scrollToBottom(animated) {
     }
 }
 
+
+function markMessagesAsRead(){
+    $.ajax({
+        url:`/api/chats/${chatId}/messages/markAsRead`,
+        type:'PUT',
+        success:refreshMessagesBadge()
+    })
+}
 
 $("#leaveGroupButton").click(() => {
     $.ajax({
@@ -210,3 +221,4 @@ $("#deleteGroupButton").click(() => {
         }
     })
 })
+

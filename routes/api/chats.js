@@ -5,10 +5,16 @@ let Message = require('../../schemas/MessageSchema')
 
 
 router.get('/', async (req,res) => {
-    let results = await Chat.find({users:{ $elemMatch:{$eq: req.session.user._id } }})
+   
+    const searchQuery = {users:{ $elemMatch:{$eq: req.session.user._id } }}
+    let results = await Chat.find(searchQuery)
     .populate('users')
     .populate('recentMessage')
     .sort({'updatedAt':-1})
+
+    if(req.query.unreadOnly !== undefined && req.query.unreadOnly == "true") {
+        results = results.filter(r => r.recentMessage && !r.recentMessage.readBy.includes(req.session.user._id));
+    }
 
     results = await User.populate(results, {path:'recentMessage.sender'})
     res.status(200).json(results)
@@ -80,6 +86,13 @@ router.put('/:chatId/leave', async (req,res) => {
 
     chat = await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
     res.sendStatus(200)
+})
+
+
+router.put('/:chatId/messages/markAsRead', async(req,res) => {
+    const chatId = req.params.chatId
+    await Message.updateMany({chat:chatId} , {$addToSet:{readBy:req.session.user._id}})
+    res.sendStatus(204)
 })
 
 
