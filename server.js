@@ -84,7 +84,8 @@ io.on('connection', socket => {
     socket.on("join room", chatRoom => socket.join(chatRoom));
     socket.on("typing", chatRoom => socket.in(chatRoom).emit("typing"));
     socket.on("stop typing", chatRoom => socket.in(chatRoom).emit("stop typing"));
-    
+    socket.on('notification recieved', userRoom => socket.in(userRoom).emit('notification recieved'))
+   
     socket.on("new message", newMessage  => {
         let chat = newMessage.chat
         if(!chat.users) return console.log('Chat.users is empty')

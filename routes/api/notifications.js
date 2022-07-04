@@ -21,8 +21,18 @@ router.put('/:notificationId/markAsOpened', async (req,res) => {
 })
 
 router.put('/markAsOpened', async (req,res) => {
-    await Notification.updateMany({userTo:req.session.user._id, opened:true})
+    await Notification.updateMany({userTo:{$eq: req.session.user._id}},  {opened:true})
     res.sendStatus(200)
 })
+
+router.get('/latest', async (req,res) => {
+    const notification = await Notification.findOne({userTo:req.session.user._id})
+    .populate('userFrom')
+    .populate('userTo')
+    .sort({createdAt:-1})
+
+    res.status(200).send(notification)
+})
+
 
 module.exports = router

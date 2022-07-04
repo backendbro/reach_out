@@ -108,7 +108,7 @@ async function sendMessage(content){
         addMessageToChat(messageData)
     
         if(connected){
-            socket.emit('new message', messageData)
+            socket.emit("new message", messageData)
         }
     } 
 })

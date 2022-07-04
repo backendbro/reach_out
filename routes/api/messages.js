@@ -30,7 +30,7 @@ router.post('/', async (req,res) => {
 
     
         const chat = await Chat.findByIdAndUpdate(chatId, {recentMessage:message, byMe:userId})
-        console.log(chat)
+       
         insertNotifications(chat, message)
         res.status(200).send(message)
         })

@@ -110,8 +110,9 @@ $("#submitReplyButton").click(async (event) => {
         url:'/api/posts',
         type:'POST',
         data:content,
-        success:() => {
-           location.reload()
+        success:(postData) => {
+            emitNotification(postData.replyTo.postedBy)
+            location.reload()
         }
     })
 })
@@ -417,6 +418,7 @@ $(document).on('click', '.followButton', async event => {
    if(userData.followers && userData.followers.includes(userLoggedIn._id)){
     button.addClass('following')
     button.text('Following')
+    emitNotification(userId)
     }else{
     button.removeClass('following')
     button.text('Follow')
@@ -445,6 +447,7 @@ $(document).on('click','.likeButton', async event => {
     button.find("span").text(postData.likes.length || "")
     if(postData.likes.includes(userLoggedIn._id)){
         button.addClass('active')
+        emitNotification(postData.postedBy)
     }else{
         button.removeClass('active')
     }
@@ -467,6 +470,7 @@ $(document).on("click", ".shareButton", async (event) => {
     button.find('span').text(postData.sharedUsers.length || "")
     if(postData.sharedUsers.includes(userLoggedIn._id)){
         button.addClass('active')
+        emitNotification(postData.postedBy)
     }else{
         button.removeClass('active')
     }
@@ -850,11 +854,24 @@ function displayPostData(postData, container, textbox, button){
 }
 
 function newMessageRecieved(newMessage){
-    if($(".chatContainer").length == 0){
-        // show pop up notification
+    if($(`[data-room = "${newMessage.chat._id}"]`).length == 0){
+        showMessagePopup(newMessage)
+        refreshMessagesBadge()
     }else{
         addMessageToChat(newMessage)
     }
+}
+
+function showMessagePopup(data) {
+    if(!data.chat.recentMessage._id) {
+        data.chat.recentMessage = data;
+    }
+
+    var html = createChatHtml(data.chat);
+    var element = $(html);
+    element.hide().prependTo("#notificationList").slideDown("fast");
+
+    setTimeout(() => element.fadeOut(400), 5000);
 }
 
 function refreshMessagesBadge() {
@@ -925,7 +942,7 @@ function getNotificationText(notification) {
     else if(notification.notificationType == "like") {
         text = `${userFromName} liked one of your posts`;
     }
-    else if(notification.notificationType == "reply") {
+    else if(notification.notificationType == "Reply") {
         text = `${userFromName} replied to one of your posts`;
     }
     else if(notification.notificationType == "follow") {
@@ -967,6 +984,7 @@ function markNotificationsAsOpened(notificationId = null, callback = null) {
     if(callback == null) callback = () => location.reload();
 
     let url = notificationId != null ? `/api/notifications/${notificationId}/markAsOpened` : `/api/notifications/markAsOpened`;
+    console.log(url)
     $.ajax({
         url: url,
         type: "PUT",
@@ -988,13 +1006,11 @@ function refreshNotificationsBadge() {
     })
 }
 
-// function showNotificationPopup(data) {
-//     var html = createNotificationHtml(data);
-//     var element = $(html);
-//     element.hide().prependTo("#notificationList").slideDown("fast");
+function showNotificationPopup(data) {
+    var html = createNotificationHtml(data);
+    var element = $(html);
+    element.hide().prependTo("#notificationList").slideDown("fast");
 
-//     setTimeout(() => element.fadeOut(400), 5000);
-// }
-
-
+    setTimeout(() => element.fadeOut(400), 5000);
+}
 ////////// ============ NOTIFICATION ============ ///////////
