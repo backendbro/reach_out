@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
             
             objectIds.push(req.session.user._id)
             queryString.postedBy = {$in:objectIds}
-            delete queryString.showFollower
+            delete queryString.showOnlyFollowingPost
         }
     }
 

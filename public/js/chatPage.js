@@ -177,7 +177,6 @@ function scrollToBottom(animated) {
 
 
     if(animated) {
-        console.log('Hello')
         container.animate({ scrollTop: scrollHeight }, "slow");
     }
     else {

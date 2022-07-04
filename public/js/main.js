@@ -203,7 +203,7 @@ function updateSelectedUsers(){
 function outputChatList(chatData, container){
     container.html("")
 
-    chatData.forEach(chat => {
+    chatData.forEach(chat => {       
         const html = createChatHtml(chat)
         container.append(html)
     })
@@ -211,15 +211,18 @@ function outputChatList(chatData, container){
     if(chatData.length == 0){
         container.append(`<span class="noResult">Nothing to show</span>`)
     }
+
 }
 
 function createChatHtml(chatData) {
     let chatName = getChatName(chatData);
     let image = getChatImageElements(chatData);
     let recentMessage = getRecentMessage(chatData.recentMessage);
-
-    let activeClass = !chatData.recentMessage || chatData.recentMessage.readBy.includes(userLoggedIn._id) ? "" : "active";
-
+    
+    let activeClass = ""
+    if(chatData.recentMessage && chatData.byMe !== userLoggedIn._id){
+        activeClass=!chatData.recentMessage || chatData.recentMessage.readBy.includes(userLoggedIn._id) ? "" : "active";
+    }
 
     return `<div class="chat" data-id='${chatData._id}'>
         <a class='resultListItem ${activeClass}' href="/messages/${chatData._id}">
@@ -855,8 +858,14 @@ function newMessageRecieved(newMessage){
 }
 
 function refreshMessagesBadge() {
+    let newData = []
     $.get("/api/chats", { unreadOnly: true }, (data) => {
-        var numResults = data.length;
+        data.forEach(data => {
+            if(data.recentMessage.sender._id !== userLoggedIn._id){
+                newData.push(data)
+            }
+        })
+        let numResults = newData.length;
 
         if(numResults > 0) {
             $("#messagesBadge").text(numResults).addClass("active");

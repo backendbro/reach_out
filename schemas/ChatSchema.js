@@ -6,7 +6,10 @@ const ChatSchema = new Schema({
     isGroup:{type:Boolean, default:false},
     users:[{type:Schema.Types.ObjectId, ref:'User'}],
     groupOwner:{type:Schema.Types.ObjectId, ref:'User'},
-    recentMessage:{type:Schema.Types.ObjectId, ref:'Message'}
+    recentMessage:{type:Schema.Types.ObjectId, ref:'Message'},
+    byMe:{type:Schema.Types.ObjectId}
 },{timestamps:true})
 
-module.exports = mongoose.model('Chat', ChatSchema)
+
+const Chat = mongoose.model('Chat', ChatSchema)
+module.exports = Chat

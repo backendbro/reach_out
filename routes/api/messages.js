@@ -28,8 +28,9 @@ router.post('/', async (req,res) => {
             message = await message.populate('chat').execPopulate()
             message = await User.populate(message, {path:'chat.users'})
 
-            
-        const chat = await Chat.findByIdAndUpdate(chatId, {recentMessage:message})
+    
+        const chat = await Chat.findByIdAndUpdate(chatId, {recentMessage:message, byMe:userId})
+        console.log(chat)
         insertNotifications(chat, message)
         res.status(200).send(message)
         })

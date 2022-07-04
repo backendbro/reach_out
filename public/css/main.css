@@ -97,9 +97,7 @@ button {
     background-color: transparent;
     border: none;
     color: var(--greyButtonText);
-    width: 80px;
-    margin-top: 10px;
-} 
+}
 
 input[type="file"]{
     background: #111;
@@ -189,13 +187,14 @@ button span {
 }
 
 
-
 #submitPostButton{
     background-color: var(--blue);
     color: white;
     border: none;
     border-radius: 40px;
-    padding: 7px 15px;
+    padding: 7px 20px;
+    margin-top: 10px;
+
 }
 
 #submitPostButton:disabled {
@@ -776,6 +775,8 @@ ul,li{
     overflow-y: hidden;
 }
 
+
+
 .chatContainer .footer {
     display: flex;
     padding: var(--spacing);
@@ -805,7 +806,6 @@ ul,li{
     overflow-y: auto;
     padding: var(--spacing);
 }
-
 .chatImagesContainer {
     display: flex;
     flex-direction: row-reverse;
@@ -863,9 +863,8 @@ ul,li{
 }
 .typingDots {
     padding: var(--spacing);
-    padding-bottom: 5px;
+    padding-bottom: 0;
     display: none;
-    background: transparent;
 }
 
 .chatMessages .message .messageContainer {
