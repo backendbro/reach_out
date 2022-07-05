@@ -49,7 +49,6 @@ router.get('/:chatId', async (req,res) => {
 
         if(checkByUser !== null){
             chat = await getChatByUserId(checkByUser._id, userId)
-            console.log(chat)
         }
     }
 
@@ -87,6 +86,5 @@ async function getChatByUserId(otherUser, userLoggedIn){
     })
     .populate('users')
 }
-
 
 module.exports = router

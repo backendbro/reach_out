@@ -21,5 +21,5 @@ NotificationSchema.statics.createNotification = async (userTo, userFrom, notific
 }
 
 
-let Notification = mongoose.model('Notification', NotificationSchema);
+const Notification = mongoose.model('Notification', NotificationSchema);
 module.exports = Notification;

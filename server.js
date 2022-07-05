@@ -14,8 +14,6 @@ const io = require('socket.io')(server, {pingTimeout: 60000})
 
 connectDb()
 
-
-
 app.set("view engine", "pug");
 app.set("views", "views");
 
@@ -50,13 +48,15 @@ const notificationApiRoute = require('./routes/api/notifications')
 
 app.use('/login', loginRoute)
 app.use("/register", registerRoute);
-app.use("/post", middleware.requireLogin, postRoute)
-app.use('/profile', middleware.requireLogin, profileRoute)
-app.use('/search', middleware.requireLogin, searchRoute)
-app.use('/setting', middleware.requireLogin, settingRoute)
-app.use('/messages', middleware.requireLogin, messageRoute)
-app.use('/notifications', middleware.requireLogin, notificationRoute)
 app.use('/logout', logoutRoute)
+
+app.use("/post", middleware.protect, postRoute)
+app.use('/profile', middleware.protect, profileRoute)
+app.use('/search', middleware.protect, searchRoute)
+app.use('/setting', middleware.protect, settingRoute)
+app.use('/messages', middleware.protect, messageRoute)
+app.use('/notifications', middleware.protect, notificationRoute)
+
 
 app.use("/api/posts", postsApiRoute);
 app.use('/api/users', usersApiRoute)
@@ -65,7 +65,7 @@ app.use('/api/chats', chatApiRoute)
 app.use('/api/messages', messageApiRoute)
 app.use('/api/notifications', notificationApiRoute)
 
-app.get("/", middleware.requireLogin, (req, res, next) => {
+app.get("/", middleware.protect, (req, res, next) => {
 
     const payload = {
         pageTitle: "Home",
@@ -96,5 +96,4 @@ io.on('connection', socket => {
         })
     });
 })
-
 

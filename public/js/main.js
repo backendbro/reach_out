@@ -1,15 +1,16 @@
+//GLOBAL VARIABLES
 let data = new Object();
 let formData;
 let cropper;
 let timer
 let selectedUsers = []
 
-
 $(document).ready(() => {
     refreshNotificationsBadge()
     refreshMessagesBadge()
 })
 
+//////////// =========== POST TEXTAREA AND BUTTON BEGIN ======= //////////
 $("#postTextarea").keyup(event => {
     const textbox = $(event.target);
     const value = textbox.val().trim();
@@ -94,6 +95,13 @@ $("#submitPostButton").click(async (event) => {
 
 })
 
+function displayPostData(postData, container, textbox, button){
+    const html = createPostHtml(postData)
+    container.prepend(html)
+    textbox.val("")
+    button.prop('disabled', true)
+}
+
 $("#submitReplyButton").click(async (event) => {
     const button = $(event.target)
     const post = $("#replyTextarea").val()
@@ -117,6 +125,11 @@ $("#submitReplyButton").click(async (event) => {
     })
 })
 
+//////////// =========== POST TEXTAREA AND BUTTON END ======= //////////
+
+
+
+//////////// ===========  SEARCH BEGIN ========= //////////
 $("#userSearchTextbox").keydown(event => {
     clearTimeout(timer)
     const textbox = $(event.target)
@@ -143,12 +156,13 @@ $("#userSearchTextbox").keydown(event => {
         }
    }, 1000)
 })
-//////////////// ========== ////////////
+//////////// ===========  SEARCH END ========= //////////
 
+
+//////////// =========== CHAT BEGIN ======== //////////
 $("#createChatButton").click(async event => {
     const data = JSON.stringify(selectedUsers)
     $.post(`/api/chats`, {users:data}, chatData => {
-        console.log('Ok')
         window.location.href = `/messages/${chatData._id}`
     })
 })
@@ -282,13 +296,11 @@ function getRecentMessage(recentMessage){
 
     return "New Chat"
 }
+//////////// =========== CHAT END  ======== //////////
 
 
 
-
-
-
-///////////// ============== /////////////////
+///////////// ======= IMAGE UPLOAD BEGIN ======== /////////////////
 $("#filePhoto").change(function(){
     if(this.files && this.files[0]){
         let reader = new FileReader()
@@ -400,11 +412,15 @@ $("#postFile").change(function(){
         reader.readAsDataURL(this.files[0])
     }
 })
+///////////// ======= IMAGE UPLOAD END ======== /////////////////
+
+
+///////////// ======= FOLLOW, LIKE, SHARE, DELETE, PIN, VIEW IMAGE BEGIN ======== /////////////////
 
 $(document).on('click', '.followButton', async event => {
     const button = $(event.target)
    const userId = button.data().user
-    if(userId == undefined) return console.log('userId is not defined')
+    if(userId == undefined) return 
 
    const response = await fetch(`/api/users/${userId}/follow`, {
     method:'PUT',
@@ -425,9 +441,9 @@ $(document).on('click', '.followButton', async event => {
     difference = -1
     }
 
-   var followersLabel = $("#followersValue");
+    let followersLabel = $("#followersValue");
    if(followersLabel.length != 0) {
-       var followersText = followersLabel.text();
+       let followersText = followersLabel.text();
        followersText = parseInt(followersText);
        followersLabel.text(followersText + difference);
    }
@@ -436,7 +452,8 @@ $(document).on('click', '.followButton', async event => {
 $(document).on('click','.likeButton', async event => {
     const button = $(event.target)
     const postId = getPostId(button)
-    
+    if(postId === undefined) return;
+
     const response = await fetch(`/api/posts/${postId}/like`, {
         method:'PUT',
         headers:{
@@ -454,8 +471,8 @@ $(document).on('click','.likeButton', async event => {
 })
 
 $(document).on("click", ".shareButton", async (event) => {
-    var button = $(event.target);
-    var postId = getPostId(button);
+    let button = $(event.target);
+    let postId = getPostId(button);
     
     if(postId === undefined) return;
 
@@ -490,7 +507,8 @@ $(document).on('click', '.postImg', async event => {
 $(document).on('click', '.post', async event => {
     const post = $(event.target)
     const postId = getPostId(post)
-    
+    if(postId === undefined) return;
+
     if(postId !== null && !post.is('button') && !post.is('img') && !post.is('li')){
         window.location.href = `/post/${postId}`
     }
@@ -499,24 +517,22 @@ $(document).on('click', '.post', async event => {
 $(document).on('click', '.deleteButton', async event => {
     const button = $(event.target)
     const postId = getPostId(button)
-    if(postId == null) return console.log('PostId is null')
+    if(postId == null) return 
+
     const response = await fetch(`/api/posts/${postId}`, {
         method:'DELETE',
         headers:{
             'Content-type':'application/json'
         }
     })
-    const postData = await response.json()
-    if(postData){
     location.reload()
-    }
     
 })
 
 $(document).on('click', '#pinPostButton', async event => {
     const button = $(event.target)
     const postId  = button.data().id
-    if(postId == undefined) return console.log('PostId is undefined')
+    if(postId == undefined) return 
 
     $.ajax({
         url: `/api/posts/${postId}`,
@@ -535,10 +551,11 @@ $(document).on('click', '#pinPostButton', async event => {
  
 })
 
+
 $(document).on('click', "#unpinPostButton", async event => {
     const button = $(event.target)
     const postId = button.data().id
-    if(postId ==  undefined) return console.log('PostId is not defined')
+    if(postId ==  undefined) return 
 
    $.ajax({
     url:`/api/posts/${postId}`,
@@ -554,16 +571,21 @@ $(document).on('click', "#unpinPostButton", async event => {
     }
    })
 })
+///////////// ======= FOLLOW, LIKE, SHARE, DELETE, PIN, VIEW IMAGE END ======== /////////////////
 
+
+//////////// ========== MODAL EVENTS BEGIN =========== ///////////////
 $("#confirmPinModal").on('show.bs.modal', async event => {
     const button = $(event.relatedTarget)
     const postId = getPostId(button)
+    if(postId == null) return 
     $("#pinPostButton").data('id', postId)
 })
 
 $("#unpinModal").on('show.bs.modal', async event => {
     const button = $(event.relatedTarget)
     const postId = getPostId(button)
+    if(postId == null) return 
     $("#unpinPostButton").data("id", postId)
 })
 
@@ -571,7 +593,7 @@ $("#replyModal").on('show.bs.modal', async event => {
     const button = $(event.relatedTarget)
     const postId = getPostId(button)
 
-    if(postId == null) return console.log('PostId is null')
+    if(postId == null) return 
     $("#submitReplyButton").data("id", postId)
    
     const response = await fetch(`/api/posts/${postId}`)
@@ -584,7 +606,9 @@ $("#replyModal").on("hidden.bs.modal", () => {
     $("#originalPostContainer").html("")
 });
 
+//////////// ========== MODAL EVENTS END =========== ///////////////
 
+///////////// =========  GET POST ID BEGIN =========== //////////////
 function getPostId(element){
     const isRoot = element.hasClass('post')
     const rootElement = isRoot ? element : element.closest('.post')
@@ -593,8 +617,10 @@ function getPostId(element){
     if(postId == null) return console.log('PostId is undefined')
     return postId
 }
+//////////// ========= GET POST ID END ============= ////////////////
 
-function createPostHtml(postData, comment=false) {
+//////////// ========== CREATING AND OUTPUTTING POST HTML BEGIN ======== /////////////
+function createPostHtml(postData, largeFont=false) {
 
     if(postData == null) return alert("post object is null");
 
@@ -610,11 +636,20 @@ function createPostHtml(postData, comment=false) {
     }
 
     let replyToText = ""
-    if(comment && postData.replyTo && postData.replyTo._id){
+    if(postData.replyTo && postData.replyTo._id){
             const replyTo = postData.replyTo.postedBy.username
             replyToText = `<span>
             Replying to <a href='/profile/${replyTo}'>@${replyTo}</a>    
         </span>`
+        }else if (postData.isReply && postData.replyTo == null){
+            replyToText = `<span>
+            Replying to a deleted post 
+        </span>`
+        }
+
+        let largeFontClass=""
+        if(largeFont){
+            largeFontClass = "largeFont"
         }
 
     const displayName = postedBy.full_name
@@ -667,7 +702,7 @@ function createPostHtml(postData, comment=false) {
     }
     
    
-    return `<div class='post' data-id='${postData._id}'>
+    return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
                 <div class='postActionContainer'>
                     ${sharedText}
                     ${replyToText}
@@ -686,7 +721,7 @@ function createPostHtml(postData, comment=false) {
                             </div>
                             
                         <div class='postBody'>
-                            <span>${postData.post}</span>
+                            <span class="">${postData.post}</span>
                             ${postImage}
                         </div>
                         <div class='postFooter'>
@@ -720,9 +755,9 @@ function outputPosts(results, container) {
     if(!Array.isArray(results)){
         results = [results]
     }
-
+    console.log(results)
     results.forEach(result => {
-        var html = createPostHtml(result, comment=true)
+        let html = createPostHtml(result,)
         container.append(html);
     });
 
@@ -733,21 +768,27 @@ function outputPosts(results, container) {
 
 function outputPostWithReply(results, container){
    container.html("")
-
+   
    if(results.replyTo !== undefined && results.replyTo._id !== undefined){
-    const html = createPostHtml(results.replyTo)
+    const html = createPostHtml(results.replyTo, largeFont=true)
     container.append(html)
    }
 
-   const mainPostHtml = createPostHtml(results.postData, true)
+
+   const mainPostHtml = createPostHtml(results.postData)
    container.append(mainPostHtml)
+  
 
    results.replies.forEach(reply => {
-    const html = createPostHtml(reply, true)
+    const html = createPostHtml(reply)
     container.append(html)
    })
 }
+//////////// ========== CREATING AND OUTPUTTING POST HTML END ======== /////////////
 
+
+
+//////////// ========== CREATING AND OUTPUTTING USER HTML BEGIN ======== /////////////
 function outputUsers(results, container){
     
     container.html("")
@@ -764,12 +805,12 @@ function outputUsers(results, container){
 
 function createUserHtml(userData, showFollowButton) {
 
-    var name = userData.full_name;
-    var isFollowing = userLoggedIn.following && userLoggedIn.following.includes(userData._id);
-    var text = isFollowing ? "Following" : "Follow"
-    var buttonClass = isFollowing ? "followButton following" : "followButton"
+    let name = userData.full_name;
+    let isFollowing = userLoggedIn.following && userLoggedIn.following.includes(userData._id);
+    let text = isFollowing ? "Following" : "Follow"
+    let buttonClass = isFollowing ? "followButton following" : "followButton"
 
-    var followButton = "";
+    let followButton = "";
     if (showFollowButton && userLoggedIn._id != userData._id) {
         followButton = `<div class='followButtonContainer'>
                             <button class='${buttonClass}' data-user='${userData._id}'>${text}</button>
@@ -789,16 +830,19 @@ function createUserHtml(userData, showFollowButton) {
                 ${followButton}
             </div>`;
 }
+//////////// ========== CREATING AND OUTPUTTING USER HTML BEGIN ======== /////////////
 
+
+//////////// ========== REFACTORING TIME BEGIN ======== /////////////
 function timeDifference(current, previous) {
 
-    var msPerMinute = 60 * 1000;
-    var msPerHour = msPerMinute * 60;
-    var msPerDay = msPerHour * 24;
-    var msPerMonth = msPerDay * 30;
-    var msPerYear = msPerDay * 365;
+    let msPerMinute = 60 * 1000;
+    let msPerHour = msPerMinute * 60;
+    let msPerDay = msPerHour * 24;
+    let msPerMonth = msPerDay * 30;
+    let msPerYear = msPerDay * 365;
 
-    var elapsed = current - previous;
+    let elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
         if(elapsed/1000 < 30) return "Just now";
@@ -826,7 +870,9 @@ function timeDifference(current, previous) {
         return Math.round(elapsed/msPerYear ) + ' years ago';   
     }
 }
+//////////// ========== REFACTORING TIME BEGIN ======== /////////////
 
+/////////// ========== DISPLAYING GIF BEGIN ========= /////////////
 function displayGif(){
     const imageSpinner = $(".imageSpinner")
     const img = document.createElement('img')
@@ -845,14 +891,10 @@ function hideGifImage(){
     $(".imageSpinner").css('visibility', 'hidden')
     $(".mainSectionContainer").find("div.imageSpinner").remove()
 }
+/////////// ========== DISPLAYING GIF BEGIN ========= /////////////
 
-function displayPostData(postData, container, textbox, button){
-    const html = createPostHtml(postData)
-    container.prepend(html)
-    textbox.val("")
-    button.prop('disabled', true)
-}
 
+/////////// ========== DISPLAYING MESSAGE POP UP BEGIN ========= /////////////
 function newMessageRecieved(newMessage){
     if($(`[data-room = "${newMessage.chat._id}"]`).length == 0){
         showMessagePopup(newMessage)
@@ -867,8 +909,8 @@ function showMessagePopup(data) {
         data.chat.recentMessage = data;
     }
 
-    var html = createChatHtml(data.chat);
-    var element = $(html);
+    let html = createChatHtml(data.chat);
+    let element = $(html);
     element.hide().prependTo("#notificationList").slideDown("fast");
 
     setTimeout(() => element.fadeOut(400), 5000);
@@ -893,8 +935,11 @@ function refreshMessagesBadge() {
 
     })
 }
-////////// ============ NOTIFICATION ============ ///////////
+/////////// ========== DISPLAYING MESSAGE POP UP BEGIN ========= /////////////
 
+
+
+////////// ============ NOTIFICATION BEGIN ============ ///////////
 function outputNotifications(results, container){
     container.html('')
 
@@ -1007,10 +1052,10 @@ function refreshNotificationsBadge() {
 }
 
 function showNotificationPopup(data) {
-    var html = createNotificationHtml(data);
-    var element = $(html);
+    let html = createNotificationHtml(data);
+    let element = $(html);
     element.hide().prependTo("#notificationList").slideDown("fast");
 
     setTimeout(() => element.fadeOut(400), 5000);
 }
-////////// ============ NOTIFICATION ============ ///////////
+////////// ============ NOTIFICATION END============ ///////////

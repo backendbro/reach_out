@@ -304,7 +304,7 @@ button span {
 .post.largeFont .postFooter {
     font-size: 23px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex:1;
 }
 
@@ -1010,3 +1010,7 @@ ul,li{
 #notificationList .active {
     background-color: white;
 }
+
+/* .largeFont{
+    font-size: 100;
+} */

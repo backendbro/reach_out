@@ -20,6 +20,7 @@ router.get('/', async (req,res) => {
     res.status(200).json(results)
 })
 
+
 router.get('/:chatId', async (req,res) => {
     const chatId = req.params.chatId
     const userId = req.session.user._id
@@ -65,12 +66,13 @@ router.post('/', async (req,res) => {
 router.put('/:chatId', async (req,res) => {
     const chatId = req.params.chatId
     const chatName = req.body.chatName
-    let chat = await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
-    res.sendStatus(200)
+    await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
+    res.sendStatus(204)
 })
 
 router.get('/:chatId/messages', async (req,res) => {
-    const messages = await Message.find({chat:req.params.chatId})
+    const chatId = req.params.chatId
+    const messages = await Message.find({chat:chatId})
     .populate('sender')
     res.status(200).send(messages)
 })
@@ -78,13 +80,13 @@ router.get('/:chatId/messages', async (req,res) => {
 router.put('/:chatId/leave', async (req,res) => {
     const userId = req.body.userId
     const chatId = req.params.chatId
-    let chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
+    const chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
     if(!chat){
         console.log('You cannot leave a room where you do not exist')
         return res.sendStatus(404)
     }
 
-    chat = await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
+    await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
     res.sendStatus(200)
 })
 

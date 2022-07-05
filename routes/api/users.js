@@ -24,6 +24,7 @@ router.post('/profilepicture', upload.single("profileImageUpload"), async (req,r
     
     if(!req.file){
         console.log('Please upload an image')
+        return;
     }
 
     const userId = req.session.user._id
@@ -31,8 +32,7 @@ router.post('/profilepicture', upload.single("profileImageUpload"), async (req,r
     try{
         const uploadedImage = await Cloudinary.uploader.upload(path)
         const urlPath = uploadedImage.url
-        const user = await User.findByIdAndUpdate(userId, {profilePic:urlPath}, {new:true})
-        await user.save()
+        req.session.user = await User.findByIdAndUpdate(userId, {profilePic:urlPath}, {new:true})
         res.sendStatus(200)
     }catch(error){
         console.log(error)
@@ -43,6 +43,7 @@ router.post('/profilepicture', upload.single("profileImageUpload"), async (req,r
 router.post('/coverpicture', upload.single("coverImageUpload"), async (req,res) => {
     if(!req.file){
         console.log('Please upload an image')
+        return;
     }
 
     const userId = req.session.user._id
@@ -50,8 +51,7 @@ router.post('/coverpicture', upload.single("coverImageUpload"), async (req,res) 
     try{
         const uploadedImage = await Cloudinary.uploader.upload(path)
         const urlPath = uploadedImage.url
-        const user = await User.findByIdAndUpdate(userId, {coverPic:urlPath}, {new:true})
-        await user.save()
+        req.session.user = await User.findByIdAndUpdate(userId, {coverPic:urlPath}, {new:true})
         res.sendStatus(200)
     }catch(error){
         console.log(error)
@@ -73,19 +73,16 @@ router.put('/:userId/follow', async (req,res) => {
         res.sendStatus(400)
     })
 
-    await User.findByIdAndUpdate(userId, { [option]: {followers: userLoggedIn} }, {new:true})
-    .then(async (user) => {
-        if(!isFollowing){
-            await Notification.createNotification(user._id, req.session.user._id, 'follow', user._id)
-            }
-        res.status(200).json(user)
-    })
+    const user = await User.findByIdAndUpdate(userId, { [option]: {followers: userLoggedIn} }, {new:true})
     .catch(error => {
         console.log(error)
         res.sendStatus(400)
     })
     
-   
+    if(!isFollowing){
+        await Notification.createNotification(user._id, req.session.user._id, 'follow', user._id)
+        }
+    res.status(200).json(user)
 })
 
 router.get('/:userId/following', async(req,res) => {

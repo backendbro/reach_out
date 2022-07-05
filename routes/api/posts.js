@@ -6,7 +6,7 @@ const Cloudinary = require('../../cloudinary/cloudinary')
 const Notification = require('../../schemas/NotificationSchema')
 
 router.get("/", async (req, res) => {
-    let queryString = req.query
+    const queryString = req.query
     if(queryString.getReply !== undefined){
         const getReply = queryString.getReply
         queryString.replyTo = {$exists:getReply}
@@ -55,10 +55,6 @@ router.get('/:postId', async(req,res) => {
     let results = {
         postData:postData
     }
-    //HANDLE POST DELETED
-    // if(postData == undefined){
-    //     postData = 'Deleted'
-    // }
 
     
     if(postData.replyTo !== undefined){
@@ -66,7 +62,6 @@ router.get('/:postId', async(req,res) => {
     }  
 
     results.replies = await getPosts({replyTo:postId})
-
     res.status(200).send(results)    
 })
 
@@ -96,6 +91,7 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
 
     if(req.body.replyTo){
         postData.replyTo = req.body.replyTo
+        postData.isReply = true
     }
     
     try{
@@ -112,9 +108,13 @@ router.post("/",  upload.single('postImage') ,async (req, res) => {
          let normPost = await Post.create(postData)
          normPost = await User.populate(normPost, {path: 'postedBy'})
          normPost = await Post.populate(normPost, {path:'replyTo'})
+        
          if(normPost.replyTo !== undefined){
-          await Notification.createNotification(normPost.replyTo.postedBy, req.session.user._id, 'Reply', normPost._id) 
+        if(req.session.user._id.toString() !== normPost.replyTo.postedBy.toString()){
+                await Notification.createNotification(normPost.replyTo.postedBy, req.session.user._id, 'Reply', normPost._id) 
+              }
         }
+          
          return res.status(200).send(normPost)     
         }
     }catch(error){
@@ -132,13 +132,13 @@ router.put('/:postId', async(req,res) => {
         })
     }
 
-   Post.findByIdAndUpdate(req.params.postId, req.body)
-   .then(() =>  res.sendStatus(204)) 
+   await Post.findByIdAndUpdate(req.params.postId, req.body)
    .catch(error => {
     console.log(error)
     res.sendStatus(400)
    })
-    
+
+   res.sendStatus(204)
 })
 
 router.put("/:id/like", async (req, res) => {
@@ -147,7 +147,6 @@ router.put("/:id/like", async (req, res) => {
     const userId = req.session.user._id;
 
     const isLiked = req.session.user.likes && req.session.user.likes.includes(postId);
-
     const option = isLiked ? "$pull" : "$addToSet";
 
     // Insert user like
@@ -158,7 +157,7 @@ router.put("/:id/like", async (req, res) => {
     })
 
     // Insert post like
-    let post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true})
+    const post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true})
     .catch(error => {
         console.log(error);
         res.sendStatus(400);
@@ -169,7 +168,6 @@ router.put("/:id/like", async (req, res) => {
             await Notification.createNotification(post.postedBy, userId, 'like', post._id)
     }}
  
-
     res.status(200).send(post)
 })
 
@@ -185,7 +183,6 @@ router.post("/:id/share", async (req, res) => {
     })
 
     const option = checkIfPostExist != null ? "$pull" : "$addToSet";
-
     let sharedPost = checkIfPostExist;
 
     if (sharedPost == null) {
@@ -204,7 +201,7 @@ router.post("/:id/share", async (req, res) => {
     })
 
     // Insert post like
-    let post = await Post.findByIdAndUpdate(postId, { [option]: { sharedUsers: userId } }, { new: true })
+    const post = await Post.findByIdAndUpdate(postId, { [option]: { sharedUsers: userId } }, { new: true })
     .catch(error => {
         console.log(error);
         res.sendStatus(400);
@@ -220,8 +217,8 @@ router.post("/:id/share", async (req, res) => {
 
 router.delete('/:postId', async (req,res) => {
     const postId = req.params.postId
-    let post = await Post.findByIdAndDelete(postId) && await Post.deleteMany({replyTo:postId})
-    res.status(200).json('Deleted')
+    await Post.findByIdAndDelete(postId) && await Post.deleteMany({replyTo:postId})
+    res.sendStatus(200)
 })
 
 async function getPosts(filter){

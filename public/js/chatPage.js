@@ -1,6 +1,7 @@
 let lastTypingTime 
 let typing = false
 
+
 $(document).ready(() => {
 
     socket.emit("join room", chatId);
@@ -14,17 +15,18 @@ $(document).ready(() => {
     })
 
     $.get(`/api/chats/${chatId}/messages`, (messageData) => {
-        var messages = [];
-        var lastSenderId = "";
+        let messages = [];
+        let lastSenderId = "";
 
         messageData.forEach((message, index) => {
-            var html = createMessageHtml(message, data[index + 1], lastSenderId);
+            let html = createMessageHtml(message, data[index + 1], lastSenderId);
             messages.push(html);
 
             lastSenderId = message.sender._id;
         })
-
-        var messagesHtml = messages.join("");
+       
+        const messagesHtml = messages.join("");
+       console.log(messagesHtml)
         addMessagesHtmlToPage(messagesHtml);
         scrollToBottom(true);
         markMessagesAsRead()
@@ -35,6 +37,7 @@ $(document).ready(() => {
 })
 
 
+
 $("#chatNameButton").click(event => {
     const content = $("#chatNameTextbox").val()
     $.ajax({
@@ -42,7 +45,7 @@ $("#chatNameButton").click(event => {
         type:'PUT',
         data:{chatName:content},
         success:(data,status, xhr) => {
-            if(xhr.status !== 200){
+            if(xhr.status !== 204){
                 alert('Could not update')
                 return
             }   

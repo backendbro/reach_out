@@ -10,8 +10,9 @@ const PostSchema = new Schema({
     likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     sharedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     sharedData: { type: Schema.Types.ObjectId, ref: 'Post' },
-    replyTo: { type: Schema.Types.ObjectId, ref: 'Post' }
+    replyTo: { type: Schema.Types.ObjectId, ref: 'Post' },
+    isReply:{type:Boolean}
 }, { timestamps: true });
 
-var Post = mongoose.model('Post', PostSchema);
+const Post = mongoose.model('Post', PostSchema);
 module.exports = Post;
