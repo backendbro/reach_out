@@ -6,8 +6,8 @@ const connectDb = require("./database");
 const session = require("express-session");
 const dotenv = require('dotenv') 
 
-dotenv.config()
-const port = process.env.PORT || 3000
+dotenv.config({path: './config.env'})
+const port = process.env.PORT || 8080
 const server = app.listen(port, () =>{ 
     console.log(`Server listening on port ${port}`)});
 const io = require('socket.io')(server, {pingTimeout: 60000})
