@@ -428,6 +428,7 @@ $(document).on('click', '.followButton', async event => {
         "Content-type":"application/json"
     }
    })
+   
    const userData = await response.json()
    
    let difference =  1
@@ -630,11 +631,10 @@ function createPostHtml(postData, largeFont=false) {
 
     
     const postedBy = postData.postedBy;
-
-    if(postedBy._id === undefined) {
-        return console.log("User object not populated");
-    }
-
+        if(postedBy._id === undefined) {
+            return console.log("User object not populated");
+        }
+   
     let replyToText = ""
     if(postData.replyTo && postData.replyTo._id){
             const replyTo = postData.replyTo.postedBy.username
@@ -675,24 +675,25 @@ function createPostHtml(postData, largeFont=false) {
 
     let button = ""
     let pinnedPostText = ""
-    let pinName = "PIN"
+    let pinName = `<i class="fas fa-thumbtack"></i>`
     if(postData.postedBy._id == userLoggedIn._id){        
     let dataTarget = "#confirmPinModal"
 
     if(postData.pinned == true){
         dataTarget = "#unpinModal"
         pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>";
-        pinName = "UN-PIN"
+        pinName = `<i class="fas fa-unlink"></i>`
     }
 
         button = `
         <div class="dropDown">
         <button>
-        <nav class="buttonLink">
+        <div class="buttonLink">
         <li class="hov"><i class="fas fa-ellipsis-v"></i>
           <ul class="mainLink">
-            <li class="deleteButton">DELETE</li>
+            <li class="deleteButton"><i class="fas fa-trash"></i></li>
             <li data-toggle="modal" data-target="${dataTarget}">${pinName}</li>
+
           </ul>
         </li>
       </nav>
@@ -701,52 +702,114 @@ function createPostHtml(postData, largeFont=false) {
       `
     }
     
-   
-    return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
-                <div class='postActionContainer'>
+   if( replyToText !== ""){
+     return ` <div class="post" data-id=${postData._id}>
+     <div class='postActionContainer'>
+                     ${replyToText}
+                 </div>
+     <div class='mainContentContainer'>
+                     <div class='userImageContainer'>
+                         <img src='${postedBy.profilePic}'>
+                     </div>
+                     <div class='postContentContainer'>
+                     
+                      <div class='pinnedPostText'>${pinnedPostText}</div>
+                         <div class='header'>
+                             <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
+                             <span class='username'>@${postedBy.username}</span>
+                             <span class='date'>${timestamp}</span>
+                             <a href="#">
+                                ${button}
+                            </a>
+                             </div>
+                             
+                         <div class='postBody'>
+                             <span class="">${postData.post}</span>
+                             ${postImage}
+                         </div>
+                         
+                         <div class="post-row">
+                         <div class="activity-icons">
+                             <div class='postButtonContainer'>
+                             <button  data-toggle='modal' data-target='#replyModal'>
+                                 <i class='far fa-comment'></i>
+                             </button>
+                             </div>
+                             <div class='postButtonContainer blue'>
+                             <button class='shareButton ${shareButtonActiveClass}'>
+                                 <i class='fas fa-share'></i>
+                                 <span>${postData.sharedUsers.length || ""}</span>
+                             </button>
+                         </div>
+                         <div class='postButtonContainer red'>
+                         <button class='likeButton ${likeButtonActiveClass}'>
+                             <i class='far fa-heart'></i>
+                             <span>${postData.likes.length || ""}</span>
+                             </button>
+                     </div>
+                         </div>
+                         
+                     </div>
+     
+                     </div>
+                 </div>
+     </div>	`
+   }else{
+    return `
+    <div class="post-containers post" data-id=${postData._id}>
+    <div class='postActionContainer'>
                     ${sharedText}
-                    ${replyToText}
                 </div>
-                <div class='mainContentContainer'>
+    <div class='mainContentContainer'>
                     <div class='userImageContainer'>
                         <img src='${postedBy.profilePic}'>
                     </div>
                     <div class='postContentContainer'>
-                    <div class='pinnedPostText'>${pinnedPostText}</div>
+                    
+                     <div class='pinnedPostText'>${pinnedPostText}</div>
                         <div class='header'>
                             <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                             <span class='username'>@${postedBy.username}</span>
                             <span class='date'>${timestamp}</span>
-                            ${button}
+                            <a href="#">
+                                ${button}
+                            </a>
                             </div>
                             
                         <div class='postBody'>
                             <span class="">${postData.post}</span>
                             ${postImage}
                         </div>
-                        <div class='postFooter'>
-                            <div class='postButtonContainer'>
-                                <button  data-toggle='modal' data-target='#replyModal'>
-                                    <i class='far fa-comment'></i>
-                                </button>
-                            </div>
+                        
+                        <div class="post-row">
+						<div class="activity-icons">
+							<div class='postButtonContainer'>
+                            <button  data-toggle='modal' data-target='#replyModal'>
+                                <i class='far fa-comment'></i>
+                            </button>
+							</div>
                             <div class='postButtonContainer blue'>
-                                <button class='shareButton ${shareButtonActiveClass}'>
-                                    <i class='fas fa-share'></i>
-                                    <span>${postData.sharedUsers.length || ""}</span>
-                                </button>
-                            </div>
-                            <div class='postButtonContainer red'>
-                                <button class='likeButton ${likeButtonActiveClass}'>
-                                    <i class='far fa-heart'></i>
-                                    <span>${postData.likes.length || ""}</span>
-                                    </button>
-                            </div>
-                           
+                            <button class='shareButton ${shareButtonActiveClass}'>
+                                <i class='fas fa-share'></i>
+                                <span>${postData.sharedUsers.length || ""}</span>
+                            </button>
                         </div>
+                        <div class='postButtonContainer red'>
+                        <button class='likeButton ${likeButtonActiveClass}'>
+                            <i class='far fa-heart'></i>
+                            <span>${postData.likes.length || ""}</span>
+                            </button>
+                    </div>
+						</div>
+						
+					</div>
+    
                     </div>
                 </div>
-            </div>`;
+    </div>	
+
+    `
+   }
 }
 
 function outputPosts(results, container) {
@@ -755,7 +818,7 @@ function outputPosts(results, container) {
     if(!Array.isArray(results)){
         results = [results]
     }
-    console.log(results)
+   
     results.forEach(result => {
         let html = createPostHtml(result,)
         container.append(html);
@@ -1029,7 +1092,7 @@ function markNotificationsAsOpened(notificationId = null, callback = null) {
     if(callback == null) callback = () => location.reload();
 
     let url = notificationId != null ? `/api/notifications/${notificationId}/markAsOpened` : `/api/notifications/markAsOpened`;
-    console.log(url)
+   
     $.ajax({
         url: url,
         type: "PUT",
