@@ -4,9 +4,12 @@ const middleware = require('./middleware')
 const path = require('path')
 const connectDb = require("./database");
 const session = require("express-session");
-const dotenv = require('dotenv')
 
-dotenv.config()
+
+if (process.env.NODE_ENV !== 'production') { 
+    const dotenv = require('dotenv') 
+    dotenv.config()
+}
 const port = process.env.PORT || 3000
 const server = app.listen(port, () =>{ 
     console.log(`Server listening on port ${port}`)});
@@ -37,7 +40,8 @@ const profileRoute = require('./routes/profileRoutes')
 const searchRoute = require('./routes/searchRoutes')
 const settingRoute = require('./routes/settingRoutes')
 const messageRoute = require('./routes/messagesRoutes')
-const notificationRoute = require('./routes/notificationRoutes')
+const notificationRoute = require('./routes/NotificationRoutes')
+
 
 // Api routes
 const postsApiRoute = require('./routes/api/posts');
