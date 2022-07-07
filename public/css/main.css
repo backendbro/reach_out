@@ -13,7 +13,7 @@
     --greenBackground: rgba(23,191,99,0.1);
     --body-color: #efefef;
 	--nav-color: #1876f2;
-	--bg-color: #FEFDFA;
+	--bg-color: #fffff0;
 }   
 
 
@@ -481,7 +481,7 @@ ul,li{
 }
 
 .followButton {
-    width: 100px;
+    width: 120px;
 }
 
 

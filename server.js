@@ -7,8 +7,9 @@ const session = require("express-session");
 const dotenv = require('dotenv')
 
 dotenv.config()
-const server = app.listen(process.env.port, () =>{ 
-    console.log(`Server listening on port  ${process.env.port}`)});
+const port = process.env.PORT || 3000
+const server = app.listen(port, () =>{ 
+    console.log(`Server listening on port ${port}`)});
 const io = require('socket.io')(server, {pingTimeout: 60000})
 
 

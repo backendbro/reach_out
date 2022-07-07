@@ -733,6 +733,7 @@ function createPostHtml(postData, largeFont=false) {
                              <div class='postButtonContainer'>
                              <button  data-toggle='modal' data-target='#replyModal'>
                                  <i class='far fa-comment'></i>
+                                 
                              </button>
                              </div>
                              <div class='postButtonContainer blue'>
