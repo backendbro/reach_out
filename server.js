@@ -4,12 +4,9 @@ const middleware = require('./middleware')
 const path = require('path')
 const connectDb = require("./database");
 const session = require("express-session");
+const dotenv = require('dotenv') 
 
-
-if (process.env.NODE_ENV !== 'production') { 
-    const dotenv = require('dotenv') 
-    dotenv.config()
-}
+dotenv.config()
 const port = process.env.PORT || 3000
 const server = app.listen(port, () =>{ 
     console.log(`Server listening on port ${port}`)});
