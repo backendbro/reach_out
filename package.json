@@ -16,9 +16,6 @@
     "pug": "^3.0.2",
     "socket.io": "^4.5.1"
   },
-  "devDependencies": {
-    "nodemon": "^2.0.16"
-  },
   "scripts": {
     "start": "node server.js",
     "start:dev": "nodemon server.js"
