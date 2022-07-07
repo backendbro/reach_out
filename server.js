@@ -67,16 +67,6 @@ app.use('/api/chats', chatApiRoute)
 app.use('/api/messages', messageApiRoute)
 app.use('/api/notifications', notificationApiRoute)
 
-app.get("/", middleware.protect, (req, res, next) => {
-
-    const payload = {
-        pageTitle: "Home",
-        userLoggedIn: req.session.user,
-        userLoggedInJs: JSON.stringify(req.session.user),
-    }
-    res.status(200).render("home", payload);
-})
-
 io.on('connection', socket => {
     socket.on('setup', userData => {
        socket.join(userData._id)
@@ -99,3 +89,19 @@ io.on('connection', socket => {
     });
 })
 
+
+
+if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static('public/build'));
+  
+    app.get("*", middleware.protect, (req, res, next) => {
+
+        const payload = {
+            pageTitle: "Home",
+            userLoggedIn: req.session.user,
+            userLoggedInJs: JSON.stringify(req.session.user),
+        }
+        res.status(200).render("home", payload);
+    })
+  }
