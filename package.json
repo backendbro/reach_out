@@ -19,7 +19,7 @@
     "nodemon": "^2.0.16"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon server.js"
   },
   "author": "backendbro",
