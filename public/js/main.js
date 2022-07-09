@@ -1066,7 +1066,7 @@ function getNotificationUrl(notification) {
 
     if(notification.notificationType == "shared" || 
         notification.notificationType == "like" || 
-        notification.notificationType == "reply") {
+        notification.notificationType == "Reply") {
             
         url = `/post/${notification.entityId}`;
     }
