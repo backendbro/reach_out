@@ -7,7 +7,7 @@ const session = require("express-session");
 const dotenv = require('dotenv') 
 
 dotenv.config({path: './config.env'})
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 3000
 const server = app.listen(port, () =>{ 
     console.log(`Server listening on port ${port}`)});
 const io = require('socket.io')(server, {pingTimeout: 60000})
@@ -67,6 +67,16 @@ app.use('/api/chats', chatApiRoute)
 app.use('/api/messages', messageApiRoute)
 app.use('/api/notifications', notificationApiRoute)
 
+app.get("/", middleware.protect, (req, res, next) => {
+
+    const payload = {
+        pageTitle: "Home",
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+    }
+    res.status(200).render("home", payload);
+})
+
 io.on('connection', socket => {
     socket.on('setup', userData => {
        socket.join(userData._id)
@@ -89,19 +99,3 @@ io.on('connection', socket => {
     });
 })
 
-
-
-if (process.env.NODE_ENV === 'production') {
-    // Set static folder
-    app.use(express.static('public/build'));
-  
-    app.get("*", middleware.protect, (req, res, next) => {
-
-        const payload = {
-            pageTitle: "Home",
-            userLoggedIn: req.session.user,
-            userLoggedInJs: JSON.stringify(req.session.user),
-        }
-        res.status(200).render("home", payload);
-    })
-  }
