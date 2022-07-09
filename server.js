@@ -37,7 +37,7 @@ const profileRoute = require('./routes/profileRoutes')
 const searchRoute = require('./routes/searchRoutes')
 const settingRoute = require('./routes/settingRoutes')
 const messageRoute = require('./routes/messagesRoutes')
-const notificationRoute = require('./routes/NotificationRoutes')
+const notificationRoute = require('./routes/notificationRoutes')
 
 
 // Api routes
