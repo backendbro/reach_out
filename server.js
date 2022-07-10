@@ -3,34 +3,47 @@ const app = express();
 const middleware = require('./middleware')
 const path = require('path')
 const connectDb = require("./database");
-const session = require("express-session");
+const session = require("cookie-session")
 const dotenv = require('dotenv') 
 
 dotenv.config({path: './config.env'})
 const port = process.env.PORT || 3000
-const server = app.listen(port, () =>{ 
-    console.log(`Server listening on port ${port}`)});
-const io = require('socket.io')(server, {pingTimeout: 60000})
+
+// const server = app.listen(port, () =>{ 
+//     console.log(`Server listening on port ${port}`)});
+// const io = require('socket.io')(server, {pingTimeout: 60000})
+
+
+  const http = require('http')
+  const server = http.createServer(app)
+  server.listen(port);
+  const io = require('socket.io')(server);
 
 
 connectDb()
 
+app.set('trust proxy', 1);
 app.set("view engine", "pug");
 app.set("views", "views");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
+
 app.use(session({
     secret: process.env.sessionSecret,
-    resave: true,
-    saveUninitialized: false
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, 
+        httpOnly: false, 
+        maxAge: 1000 * 60 * 10 
+    }
 }))
 
-
 // Routes
-const loginRoute = require('./routes/loginRoutes');
-const registerRoute = require('./routes/registerRoutes');
+const loginRoute = require('./routes/loginRoutes')
+const registerRoute = require('./routes/registerRoutes')
 const logoutRoute = require('./routes/logoutRoutes')
 const postRoute = require('./routes/postRoutes')
 const profileRoute = require('./routes/profileRoutes')
@@ -50,7 +63,7 @@ const notificationApiRoute = require('./routes/api/notifications')
 
 app.use('/login', loginRoute)
 app.use("/register", registerRoute);
-app.use('/logout', logoutRoute)
+app.use("/logout", loginRoute)
 
 app.use("/post", middleware.protect, postRoute)
 app.use('/profile', middleware.protect, profileRoute)
@@ -79,8 +92,8 @@ app.get("/", middleware.protect, (req, res, next) => {
 
 io.on('connection', socket => {
     socket.on('setup', userData => {
-       socket.join(userData._id)
-       socket.emit('connected')
+    socket.join(userData._id)
+    socket.emit('connected')
     })
 
     socket.on("join room", chatRoom => socket.join(chatRoom));

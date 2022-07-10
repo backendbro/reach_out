@@ -1,12 +1,14 @@
 let connected = false;
 
-let socket = io("http://localhost:3003");
+const origin = window.location.origin;
+let socket = io(origin)
+
 socket.emit('setup', userLoggedIn) 
 
 // setup handshake complete
-socket.on("connected",() => connected = true)
+socket.on('connected', () => connected = true)
+console.log(connected)
 socket.on('message received', (newMessage) => newMessageRecieved(newMessage))
-
 socket.on('notification recieved', () => {
     $.get('/api/notifications/latest', (notificationData) => {
         showNotificationPopup(notificationData)
