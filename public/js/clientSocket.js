@@ -7,7 +7,6 @@ socket.emit('setup', userLoggedIn)
 
 // setup handshake complete
 socket.on('connected', () => connected = true)
-console.log(connected)
 socket.on('message received', (newMessage) => newMessageRecieved(newMessage))
 socket.on('notification recieved', () => {
     $.get('/api/notifications/latest', (notificationData) => {

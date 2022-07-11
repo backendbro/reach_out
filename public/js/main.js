@@ -961,7 +961,6 @@ function hideGifImage(){
 /////////// ========== DISPLAYING MESSAGE POP UP BEGIN ========= /////////////
 function newMessageRecieved(newMessage){
     if($(`[data-room = "${newMessage.chat._id}"]`).length == 0){
-        showMessagePopup(newMessage)
         refreshMessagesBadge()
     }else{
         addMessageToChat(newMessage)

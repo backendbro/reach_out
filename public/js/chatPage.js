@@ -26,7 +26,7 @@ $(document).ready(() => {
         })
        
         const messagesHtml = messages.join("");
-       console.log(messagesHtml)
+      
         addMessagesHtmlToPage(messagesHtml);
         scrollToBottom(true);
         markMessagesAsRead()

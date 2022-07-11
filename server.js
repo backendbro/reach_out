@@ -3,26 +3,13 @@ const app = express();
 const middleware = require('./middleware')
 const path = require('path')
 const connectDb = require("./database");
-const session = require("cookie-session")
+const session = require("express-session")
 const dotenv = require('dotenv') 
 
 dotenv.config({path: './config.env'})
-const port = process.env.PORT || 3000
-
-// const server = app.listen(port, () =>{ 
-//     console.log(`Server listening on port ${port}`)});
-// const io = require('socket.io')(server, {pingTimeout: 60000})
-
-
-  const http = require('http')
-  const server = http.createServer(app)
-  server.listen(port);
-  const io = require('socket.io')(server);
 
 
 connectDb()
-
-app.set('trust proxy', 1);
 app.set("view engine", "pug");
 app.set("views", "views");
 
@@ -90,6 +77,14 @@ app.get("/", middleware.protect, (req, res, next) => {
     res.status(200).render("home", payload);
 })
 
+
+// HELP MY LIFE ABEG. I WAN CRAZE
+
+const port = process.env.PORT || 3000
+
+const server = app.listen(port, () => console.log("Server listening on port " + port));
+const io = require("socket.io")(server);
+
 io.on('connection', socket => {
     socket.on('setup', userData => {
     socket.join(userData._id)
@@ -111,4 +106,5 @@ io.on('connection', socket => {
         })
     });
 })
+
 
