@@ -338,7 +338,7 @@ $("#coverPhoto").change(function(){
                 aspectRatio: 16 / 9,
                 background:false
             })
-            console.log(cropper)
+            
         }
         reader.readAsDataURL(this.files[0])
     }
@@ -353,7 +353,10 @@ $("#imageUploadButton").click(event => {
    canvas.toBlob(blob => {
     const formData = new FormData();
     formData.append('profileImageUpload', blob)
-    
+
+    const loadingProcess = $("#imageLoadingProcess")
+    loadingProcess.css({'display':'block'})
+     
     $.ajax({
         type:'POST',
         url:`/api/users/profilepicture`,
@@ -361,15 +364,17 @@ $("#imageUploadButton").click(event => {
         processData: false,
         contentType: false,
         success:(xhr) => {
+            loadingProcess.css({'display':'none'})
             if(xhr.status == 400){
                 alert('Please reupload again')
             }
-            hideGif()
+           
             location.reload()
         }
     })
    })
 })
+
 
 $("#coverPhotoButton").click(event => {
     const canvas = cropper.getCroppedCanvas()
@@ -380,6 +385,10 @@ $("#coverPhotoButton").click(event => {
     canvas.toBlob(blob => {
      const formData = new FormData();
      formData.append('coverImageUpload', blob)
+
+     const loadingProcess = $("#CoverimageLoadingProcess")
+     loadingProcess.css({'display':'block'})
+    
      $.ajax({
          type:'POST',
          url:`/api/users/coverpicture`,
@@ -387,11 +396,13 @@ $("#coverPhotoButton").click(event => {
          processData: false,
          contentType: false,
          success:(xhr) => {
+            loadingProcess.css({'display':'none'})
              if(xhr.status == 400){
                  alert('Please reupload again')
              }
+
              location.reload()
-         }
+            }
      })
     })
 })

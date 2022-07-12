@@ -17,15 +17,6 @@
 }   
 
 
-@media (min-width:320px) {
-    nav a {  
-        margin-right: -15px;
-      }
-}
-
-
-
-
 html, body {
     height: 100%;
     min-height: 100%;
@@ -1000,13 +991,12 @@ ul,li{
 #notificationBadge,
 #messagesBadge {
     background-color: var(--red);
-    height: 20px;
-    width: 20px;
+    height: 25px;
+    width: 25px;
     border-radius: 50%;
     position: absolute;
     top: 0;
-    right: 0;
-    margin-right: 5px;
+    right: 0;   
     color: white;
     font-size: 18px;
     display: flex;
@@ -1135,5 +1125,31 @@ ul,li{
 	display: inline-flex;
 	align-items: center;
 	margin-right:30px;
+    margin-top: 5px;
+}
+
+#imageLoadingProcess {
+    display: none;
+    background-color: #00bfff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    height: 26px;
+    width: 60px;
+    margin-bottom: -10px;
+    margin-left: 30px;
+    margin-top: 5px;
+}
+
+#CoverimageLoadingProcess{
+    display: none;
+    background-color: #00bfff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    height: 26px;
+    width: 60px;
+    margin-bottom: -10px;
+    margin-left: 30px;
     margin-top: 5px;
 }
