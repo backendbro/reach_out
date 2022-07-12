@@ -317,7 +317,6 @@ $("#filePhoto").change(function(){
                 aspectRatio: 1/1,
                 background:false
             })
-            console.log(cropper)
         }
         reader.readAsDataURL(this.files[0])
     }
@@ -354,6 +353,7 @@ $("#imageUploadButton").click(event => {
    canvas.toBlob(blob => {
     const formData = new FormData();
     formData.append('profileImageUpload', blob)
+    
     $.ajax({
         type:'POST',
         url:`/api/users/profilepicture`,
@@ -364,6 +364,7 @@ $("#imageUploadButton").click(event => {
             if(xhr.status == 400){
                 alert('Please reupload again')
             }
+            hideGif()
             location.reload()
         }
     })
@@ -938,6 +939,7 @@ function timeDifference(current, previous) {
 
 /////////// ========== DISPLAYING GIF BEGIN ========= /////////////
 function displayGif(){
+    console.log('displaying')
     const imageSpinner = $(".imageSpinner")
     const img = document.createElement('img')
     img.src = `/images/loadingSpinner.gif`

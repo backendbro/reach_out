@@ -16,11 +16,14 @@
 	--bg-color: #fffff0;
 }   
 
-  @media only screen and (min-width : 480px) {
-    nav i {
-        margin-left: 45px;
+
+@media (min-width:320px) {
+    nav a {  
+        margin-right: -15px;
       }
 }
+
+
 
 
 html, body {
@@ -997,12 +1000,13 @@ ul,li{
 #notificationBadge,
 #messagesBadge {
     background-color: var(--red);
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
     border-radius: 50%;
     position: absolute;
     top: 0;
     right: 0;
+    margin-right: 5px;
     color: white;
     font-size: 18px;
     display: flex;
