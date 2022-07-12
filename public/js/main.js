@@ -728,8 +728,8 @@ function createPostHtml(postData, largeFont=false) {
                              ${postImage}
                          </div>
                          
-                         <div class="post-row">
-                         <div class="activity-icons">
+                         
+                         <div class="postFooter">
                              <div class='postButtonContainer'>
                              <button  data-toggle='modal' data-target='#replyModal'>
                                  <i class='far fa-comment'></i>
@@ -750,7 +750,7 @@ function createPostHtml(postData, largeFont=false) {
                      </div>
                          </div>
                          
-                     </div>
+                     
      
                      </div>
                  </div>
@@ -782,8 +782,8 @@ function createPostHtml(postData, largeFont=false) {
                             ${postImage}
                         </div>
                         
-                        <div class="post-row">
-						<div class="activity-icons">
+                       
+						<div class="postFooter">
 							<div class='postButtonContainer'>
                             <button  data-toggle='modal' data-target='#replyModal'>
                                 <i class='far fa-comment'></i>
@@ -800,9 +800,9 @@ function createPostHtml(postData, largeFont=false) {
                             <i class='far fa-heart'></i>
                             <span>${postData.likes.length || ""}</span>
                             </button>
-                    </div>
-						</div>
+                  
 						
+                        </div>
 					</div>
     
                     </div>
