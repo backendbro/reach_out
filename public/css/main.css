@@ -16,13 +16,11 @@
 	--bg-color: #fffff0;
 }   
 
-  @media (min-width:480px)  { 
-     /* For mobile phones: */
-     nav i {
+  @media only screen and (min-width : 480px) {
+    nav i {
         margin-left: 45px;
       }
-  }
-  
+}
 
 
 html, body {

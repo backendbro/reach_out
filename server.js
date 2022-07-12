@@ -3,7 +3,7 @@ const app = express();
 const middleware = require('./middleware')
 const path = require('path')
 const connectDb = require("./database");
-const session = require("cookie-session")
+const session = require("express-session")
 const dotenv = require('dotenv') 
 
 dotenv.config({path: './config.env'})
