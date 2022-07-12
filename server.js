@@ -37,7 +37,7 @@ const profileRoute = require('./routes/profileRoutes')
 const searchRoute = require('./routes/searchRoutes')
 const settingRoute = require('./routes/settingRoutes')
 const messageRoute = require('./routes/messagesRoutes')
-const notificationRoute = require('./routes/notificationRoutes')
+//const notificationRoute = require('./routes/notificationRoutes')
 
 
 // Api routes
@@ -46,7 +46,7 @@ const usersApiRoute = require('./routes/api/users')
 const settingsApiRoute = require('./routes/api/settings')
 const chatApiRoute  = require('./routes/api/chats')
 const messageApiRoute = require('./routes/api/messages')
-const notificationApiRoute = require('./routes/api/notifications')
+//const notificationApiRoute = require('./routes/api/notifications')
 
 app.use('/login', loginRoute)
 app.use("/register", registerRoute);
@@ -57,7 +57,7 @@ app.use('/profile', middleware.protect, profileRoute)
 app.use('/search', middleware.protect, searchRoute)
 app.use('/setting', middleware.protect, settingRoute)
 app.use('/messages', middleware.protect, messageRoute)
-app.use('/notifications', middleware.protect, notificationRoute)
+//app.use('/notifications', middleware.protect, notificationRoute)
 
 
 app.use("/api/posts", postsApiRoute);
@@ -65,7 +65,7 @@ app.use('/api/users', usersApiRoute)
 app.use('/api/settings', settingsApiRoute)
 app.use('/api/chats', chatApiRoute)
 app.use('/api/messages', messageApiRoute)
-app.use('/api/notifications', notificationApiRoute)
+//app.use('/api/notifications', notificationApiRoute)
 
 app.get("/", middleware.protect, (req, res, next) => {
 
