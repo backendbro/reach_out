@@ -7,6 +7,9 @@ let Message = require('../../schemas/MessageSchema')
 router.get('/', async (req,res) => {
    
     const searchQuery = {users:{ $elemMatch:{$eq: req.session.user._id } }}
+    if(!searchQuery){
+        return res.sendStatus(404)
+    }
     let results = await Chat.find(searchQuery)
     .populate('users')
     .populate('recentMessage')
