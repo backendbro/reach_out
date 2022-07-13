@@ -20,7 +20,7 @@
 
    li.hov{
         margin-top: -10px;
-        margin-left: 40px;
+        margin-left: 35px;
     } 
 
     .hov{
@@ -31,6 +31,17 @@
         width: 25px;
         margin-left: -24px;
     }
+    
+     .postUserImage{
+        position: relative;
+        width: 50%;
+        top: 10%;
+        margin-left: 10px;
+    } 
+
+    /* .postContentContainer{
+        margin-bottom: -20px;
+    } */
 }
 
 html, body {

@@ -712,6 +712,11 @@ function createPostHtml(postData, largeFont=false) {
       </div>
       `
     }
+
+    let postUserImage = ""
+    if(userLoggedIn._id == postedBy._id){
+        postUserImage = "postUserImage"
+    }
     
    if( replyToText !== ""){
      return ` <div class="post" data-id=${postData._id}>
@@ -719,7 +724,7 @@ function createPostHtml(postData, largeFont=false) {
                      ${replyToText}
                  </div>
      <div class='mainContentContainer'>
-                     <div class='userImageContainer'>
+                     <div class='userImageContainer ${postUserImage}'>
                          <img src='${postedBy.profilePic}'>
                      </div>
                      <div class='postContentContainer'>
@@ -773,7 +778,7 @@ function createPostHtml(postData, largeFont=false) {
                     ${sharedText}
                 </div>
     <div class='mainContentContainer'>
-                    <div class='userImageContainer'>
+                    <div class='userImageContainer ${postUserImage}'>
                         <img src='${postedBy.profilePic}'>
                     </div>
                     <div class='postContentContainer'>
