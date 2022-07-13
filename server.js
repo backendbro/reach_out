@@ -66,21 +66,6 @@ app.use('/api/settings', settingsApiRoute)
 app.use('/api/chats', chatApiRoute)
 app.use('/api/messages', messageApiRoute)
 app.use('/api/notifications', notificationApiRoute)
-
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-    // Set static folder
-    app.use(express.static('build'));
-  
-    app.get('*', (req, res) => {
-        const payload = {
-            pageTitle: "Home",
-            userLoggedIn: req.session.user,
-            userLoggedInJs: JSON.stringify(req.session.user),
-        }
-        res.status(200).render("home", payload);
-    });
-  }
   
 app.get("/", middleware.protect, (req, res, next) => {
 
