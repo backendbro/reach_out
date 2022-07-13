@@ -68,17 +68,19 @@ app.use('/api/messages', messageApiRoute)
 app.use('/api/notifications', notificationApiRoute)
   
 app.get("/", middleware.protect, (req, res, next) => {
-
+    let active;
+    if(req.session.user !== null){
+        active = 'YES'
+    }
     const payload = {
         pageTitle: "Home",
         userLoggedIn: req.session.user,
         userLoggedInJs: JSON.stringify(req.session.user),
+        active
     }
+
     res.status(200).render("home", payload);
 })
-
-
-// HELP MY LIFE ABEG. I WAN CRAZE
 
 const port = process.env.PORT || 3000
 

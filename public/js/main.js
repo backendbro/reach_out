@@ -708,7 +708,6 @@ function createPostHtml(postData, largeFont=false) {
 
           </ul>
         </li>
-      </nav>
       </button>
       </div>
       `

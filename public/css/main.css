@@ -16,6 +16,22 @@
 	--bg-color: #fffff0;
 }   
 
+ @media (max-width: 576px) {  
+
+   li.hov{
+        margin-top: -10px;
+        margin-left: 40px;
+    } 
+
+    .hov{
+        max-width: 10px;
+    }
+
+    ul.mainLink li{
+        width: 25px;
+        margin-left: -24px;
+    }
+}
 
 html, body {
     height: 100%;
@@ -359,20 +375,25 @@ button span {
     margin-top: 10px;
 }
 
-nav, .buttonLink{
+ .buttonLink{
     position: absolute;
-    margin-left: -40px;
+    margin-left: -50px;
     margin-top: -50px;
 }
 
 ul,li{
   margin: 0;
   padding: 10px;
+
 }
+
 .mainLink{
   position:absolute;
   z-index:1;
+  margin-left: 10px;
+  margin-top: -15px;
 }
+
 .mainLink li{
   list-style:none;
   background: var(--blueLight);
@@ -382,6 +403,7 @@ ul,li{
   height: 30px;
   line-height: 30px;
   -webkit-transition: all .5s ease-in-out;
+  margin-left: -45px;
   
 }
 
@@ -397,17 +419,7 @@ ul,li{
   -webkit-transform: perspective(350px) rotateX(90deg);
 }
 
-/*.mainLink {
-  
-  -webkit-transition: all .5s ease-in-out;
-  -webkit-transform-origin: 50% 0%;
-  -webkit-transform: perspective(350px) rotateX(-90deg);
-}
-.hov:hover .mainLink {
-  
-  -webkit-transform-origin: top;
-  -webkit-transform: perspective(350px) rotateX(0deg);
-}*/
+
 
 .hov:hover li:nth-child(odd){
   -webkit-transform-origin: top;
@@ -427,8 +439,7 @@ ul,li{
 
 .hov{
   position:relative;
-  height: 40px;
-  width:112px;
+  max-width: 10px;
   color: black;
   font-size: 13px;
   font-family: Helvetica;
@@ -437,9 +448,8 @@ ul,li{
   line-height: 40px;
   list-style:none;
   z-index:2;
-  
+  margin-left: 40px;
 }
-
 
 .coverPhotoSection {
     height: 180px;
