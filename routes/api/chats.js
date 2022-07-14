@@ -9,10 +9,7 @@ router.get('/', async (req,res) => {
     if(req.session.user !== null){
          userId = req.session.user._id
     }
-    const searchQuery = {users:{ $elemMatch:{$eq: req.session.user._id } }}
-    if(!searchQuery){
-        return res.sendStatus(404)
-    }
+    const searchQuery = {users:{ $elemMatch:{$eq: userId } }}
     let results = await Chat.find(searchQuery)
     .populate('users')
     .populate('recentMessage')
@@ -30,9 +27,15 @@ router.get('/', async (req,res) => {
 router.get('/:chatId', async (req,res) => {
     const chatId = req.params.chatId
     const userId = req.session.user._id
+    try {
     const chat = await Chat.findOne({_id:chatId, users: {$elemMatch: { $eq: userId } } })
     .populate('users')
-    res.status(200).send(chat)
+    res.status(200).send(chat)        
+    } catch (error) {
+    console.log(error)
+    res.sendStatus(500)    
+    }
+
 })
 
 router.post('/', async (req,res) => {
@@ -64,7 +67,7 @@ router.post('/', async (req,res) => {
     res.status(200).send(chat)
     }catch(error){
         console.log(error)
-        res.sendStatus(400)
+        return res.sendStatus(500)
     }
 
 })
@@ -72,51 +75,78 @@ router.post('/', async (req,res) => {
 router.put('/:chatId', async (req,res) => {
     const chatId = req.params.chatId
     const chatName = req.body.chatName
-    await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
-    res.sendStatus(204)
+    try {
+        await Chat.findByIdAndUpdate(chatId, {chatName:chatName}, {new:true})
+        res.sendStatus(204)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.get('/:chatId/messages', async (req,res) => {
     const chatId = req.params.chatId
-    const messages = await Message.find({chat:chatId})
-    .populate('sender')
-    res.status(200).send(messages)
+    try {
+        const messages = await Message.find({chat:chatId})
+        .populate('sender')
+        res.status(200).send(messages)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.put('/:chatId/leave', async (req,res) => {
     const userId = req.body.userId
     const chatId = req.params.chatId
-    const chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
-    if(!chat){
-        console.log('You cannot leave a room where you do not exist')
-        return res.sendStatus(404)
+    try {
+        const chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
+        if(!chat){
+            console.log('You cannot leave a room where you do not exist')
+            return res.sendStatus(404)
+        }
+    
+        await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
+        res.sendStatus(200)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
     }
-
-    await Chat.findByIdAndUpdate(chatId, {$pull : { users: userId }})
-    res.sendStatus(200)
 })
 
 
 router.put('/:chatId/messages/markAsRead', async(req,res) => {
     const chatId = req.params.chatId
-    await Message.updateMany({chat:chatId} , {$addToSet:{readBy:req.session.user._id}})
-    res.sendStatus(204)
+    try {
+        await Message.updateMany({chat:chatId} , {$addToSet:{readBy:req.session.user._id}})
+        res.sendStatus(204)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 
 router.delete('/:chatId/delete', async (req,res) => {
     const userId = req.body.userId
     const chatId = req.params.chatId
-    let chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
 
-    if(!chat){
-        console.log('You cannot leave a room where you do not exist')
-        return res.sendStatus(404)  
+    try {
+        let chat = await Chat.findOne({_id:chatId, users:{$elemMatch: { $eq: userId}}})
+
+        if(!chat){
+            console.log('You cannot leave a room where you do not exist')
+            return res.sendStatus(404)  
+        }
+        await Chat.deleteOne({_id:chatId})
+        await Message.deleteMany({ chat: chatId})
+    
+        res.sendStatus(200)        
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
     }
-    await Chat.deleteOne({_id:chatId})
-    await Message.deleteMany({ chat: chatId})
 
-    res.sendStatus(200)
 })
 
 module.exports = router

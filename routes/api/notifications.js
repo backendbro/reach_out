@@ -16,22 +16,38 @@ router.get('/', async (req,res) => {
 
 router.put('/:notificationId/markAsOpened', async (req,res) => {
     const notificationId = req.params.notificationId
-    await Notification.findByIdAndUpdate(notificationId, {opened:true}, {new:true})
-    res.sendStatus(200)
+    try {
+        await Notification.findByIdAndUpdate(notificationId, {opened:true}, {new:true})
+        res.sendStatus(200)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.put('/markAsOpened', async (req,res) => {
-    await Notification.updateMany({userTo:{$eq: req.session.user._id}},  {opened:true})
-    res.sendStatus(200)
+    try {
+        await Notification.updateMany({userTo:{$eq: req.session.user._id}},  {opened:true})
+        res.sendStatus(200)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.get('/latest', async (req,res) => {
-    const notification = await Notification.findOne({userTo:req.session.user._id})
-    .populate('userFrom')
-    .populate('userTo')
-    .sort({createdAt:-1})
-
-    res.status(200).send(notification)
+    
+    try{
+        const notification = await Notification.findOne({userTo:req.session.user._id})
+        .populate('userFrom')
+        .populate('userTo')
+        .sort({createdAt:-1})
+    
+        res.status(200).send(notification)
+    }catch(error){
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 

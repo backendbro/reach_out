@@ -15,9 +15,13 @@ router.get('/', async (req,res) => {
             ]
         }
     }
-
-    const users = await User.find(queryString)
-    res.status(200).send(users)
+    try {
+        const users = await User.find(queryString)
+        res.status(200).send(users)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.post('/profilepicture', upload.single("profileImageUpload"), async (req,res) => {
@@ -36,7 +40,7 @@ router.post('/profilepicture', upload.single("profileImageUpload"), async (req,r
         res.sendStatus(200)
     }catch(error){
         console.log(error)
-        res.sendStatus(400)
+        res.sendStatus(500)
     } 
 })
 
@@ -55,7 +59,7 @@ router.post('/coverpicture', upload.single("coverImageUpload"), async (req,res) 
         res.sendStatus(200)
     }catch(error){
         console.log(error)
-        res.sendStatus(400)
+        res.sendStatus(500)
     } 
 })
 
@@ -70,13 +74,13 @@ router.put('/:userId/follow', async (req,res) => {
     req.session.user = await User.findByIdAndUpdate(userLoggedIn, { [option]: { following: userId } }, {new:true})
     .catch(error => {
         console.log(error)
-        res.sendStatus(400)
+        res.sendStatus(500)
     })
 
     const user = await User.findByIdAndUpdate(userId, { [option]: {followers: userLoggedIn} }, {new:true})
     .catch(error => {
         console.log(error)
-        res.sendStatus(400)
+        res.sendStatus(500)
     })
     
     if(!isFollowing){
@@ -86,17 +90,27 @@ router.put('/:userId/follow', async (req,res) => {
 })
 
 router.get('/:userId/following', async(req,res) => {
-    const userId = req.params.userId
-    const user = await User.findById(userId)
-    .populate('following')
-    res.status(200).send(user.following)
+    try {
+        const userId = req.params.userId
+        const user = await User.findById(userId)
+        .populate('following')
+        res.status(200).send(user.following)
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
 })
 
 router.get('/:userId/follower', async(req,res) => {
-    const userId = req.params.userId
-    const user = await User.findById(userId)
-    .populate('followers')
-    res.status(200).send(user.followers) 
+    try {
+        const userId = req.params.userId
+        const user = await User.findById(userId)
+        .populate('followers')
+        res.status(200).send(user.followers) 
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
 })
 
 

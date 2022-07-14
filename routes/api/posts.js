@@ -48,7 +48,8 @@ router.get("/", async (req, res) => {
 router.get('/:postId', async(req,res) => {
   
     const postId = req.params.postId
-    
+
+
     let postData = await getPosts({_id:postId})
     postData = postData[0]
 
@@ -57,9 +58,9 @@ router.get('/:postId', async(req,res) => {
     }
 
     
-    if(postData.replyTo !== undefined){
+    if(postData.replyTo !== undefined && postData.replyTo !== null){
         results.replyTo = postData.replyTo
-    }  
+    }
 
     results.replies = await getPosts({replyTo:postId})
     res.status(200).send(results)    
@@ -67,9 +68,14 @@ router.get('/:postId', async(req,res) => {
 
 router.get('/:postId/getImage', async (req,res) => {
     const postId = req.params.postId
-    const post = await Post.findById(postId)
-    const postUrl = post.postImage
-    res.status(200).send(postUrl)
+    try {
+        const post = await Post.findById(postId)
+        const postUrl = post.postImage
+        res.status(200).send(postUrl)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
+    }
 })
 
 router.post("/",  upload.single('postImage') ,async (req, res) => {
@@ -128,14 +134,14 @@ router.put('/:postId', async(req,res) => {
         await Post.updateMany({postedBy: req.session.user }, { pinned: false })
         .catch(error => {
             console.log(error);
-            res.sendStatus(400);
+            res.sendStatus(500);
         })
     }
 
    await Post.findByIdAndUpdate(req.params.postId, req.body)
    .catch(error => {
     console.log(error)
-    res.sendStatus(400)
+    res.sendStatus(500)
    })
 
    res.sendStatus(204)
@@ -153,14 +159,14 @@ router.put("/:id/like", async (req, res) => {
     req.session.user = await User.findByIdAndUpdate(userId, { [option]: { likes: postId } }, { new: true})
     .catch(error => {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(500);
     })
 
     // Insert post like
     const post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true})
     .catch(error => {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(500);
     })
 
     if(req.session.user._id.toString() !== post.postedBy.toString()){
@@ -179,7 +185,7 @@ router.post("/:id/share", async (req, res) => {
     const checkIfPostExist = await Post.findOneAndDelete({ postedBy: userId, sharedData: postId })
     .catch(error => {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(500);
     })
 
     const option = checkIfPostExist != null ? "$pull" : "$addToSet";
@@ -189,7 +195,7 @@ router.post("/:id/share", async (req, res) => {
         sharedPost = await Post.create({ postedBy: userId, sharedData: postId })
         .catch(error => {
             console.log(error);
-            res.sendStatus(400);
+            res.sendStatus(500);
         })
     }
 
@@ -197,14 +203,14 @@ router.post("/:id/share", async (req, res) => {
     req.session.user = await User.findByIdAndUpdate(userId, { [option]: { shared: sharedPost._id } }, { new: true })
     .catch(error => {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(500);
     })
 
     // Insert post like
     const post = await Post.findByIdAndUpdate(postId, { [option]: { sharedUsers: userId } }, { new: true })
     .catch(error => {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(500);
     }) 
 
     if(req.session.user._id.toString() !== post.postedBy.toString()){
@@ -217,20 +223,30 @@ router.post("/:id/share", async (req, res) => {
 
 router.delete('/:postId', async (req,res) => {
     const postId = req.params.postId
-    await Post.findByIdAndDelete(postId) && await Post.deleteMany({replyTo:postId})
-    res.sendStatus(200)
+    try {
+        await Post.findByIdAndDelete(postId) && await Post.deleteMany({replyTo:postId})
+        res.sendStatus(200)
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)   
+    }
 })
 
 async function getPosts(filter){
-    let results = await Post.find(filter)
-    .populate('postedBy')
-    .populate('sharedData')
-    .populate('replyTo')
-    .sort({"createdAt": -1})
-
-    results = await User.populate(results, {path: "sharedData.postedBy"})
-    results = await User.populate(results, {path: "replyTo.postedBy"})
-    return results
+    try {
+        let results = await Post.find(filter)
+        .populate('postedBy')
+        .populate('sharedData')
+        .populate('replyTo')
+        .sort({"createdAt": -1})
+    
+        results = await User.populate(results, {path: "sharedData.postedBy"})
+        results = await User.populate(results, {path: "replyTo.postedBy"})
+        return results
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)      
+    }
 }
 
 module.exports = router;

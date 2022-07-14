@@ -39,17 +39,22 @@ router.get('/:chatId', async (req,res) => {
         return res.status(200).render('chatPage', payload)
     }
 
-    let chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
-    .populate('users')
-
-
-    if(chat == null){
-        const checkByUser = await User.findById(chatId)
-
-
-        if(checkByUser !== null){
-            chat = await getChatByUserId(checkByUser._id, userId)
-        }
+    try {
+        let chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
+        .populate('users')
+    
+    
+        if(chat == null){
+            const checkByUser = await User.findById(chatId)
+    
+    
+            if(checkByUser !== null){
+                chat = await getChatByUserId(checkByUser._id, userId)
+            }
+        }   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
     }
 
     if(chat == null){

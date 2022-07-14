@@ -54,15 +54,20 @@ router.get('/:username/followers', async (req,res) => {
 
 router.get('/:username/following', async (req,res) => {
     const username = req.params.username
-    const user = await User.findOne({username:username})
-    .populate('following')
-    const payload = {
-        pageTitle:user.username,
-        userLoggedIn:req.session.user,
-        userLoggedInJs:JSON.stringify(req.session.user),
-        user:user
+    try {
+        const user = await User.findOne({username:username})
+        .populate('following')
+        const payload = {
+            pageTitle:user.username,
+            userLoggedIn:req.session.user,
+            userLoggedInJs:JSON.stringify(req.session.user),
+            user:user
+        }
+        res.status(200).render('followPage', payload)   
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500)
     }
-    res.status(200).render('followPage', payload)
 })
 
 async function getPayload(username, loggedInUser){

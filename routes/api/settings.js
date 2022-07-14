@@ -50,7 +50,7 @@ router.post('/general', async (req,res) => {
         res.redirect('/setting')
     } catch (error) {
         console.log(error)
-        res.sendStatus(404)
+        res.sendStatus(500)
     }
     
 })
@@ -87,7 +87,7 @@ router.post('/password', async (req,res) => {
     res.redirect('/setting')
     }catch(error){
         console.log(error)
-        res.sendStatus(404)
+        res.sendStatus(500)
     }
 })
 
