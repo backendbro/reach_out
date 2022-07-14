@@ -248,20 +248,14 @@ router.delete('/:postId', async (req,res) => {
 })
 
 async function getPosts(filter){
-    try {
         let results = await Post.find(filter)
         .populate('postedBy')
         .populate('sharedData')
         .populate('replyTo')
-        .limit(limit)
         .sort({"createdAt": -1})
         results = await User.populate(results, {path: "sharedData.postedBy"})
         results = await User.populate(results, {path: "replyTo.postedBy"})
         return results
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500)      
-    }
 }
 
 module.exports = router;
