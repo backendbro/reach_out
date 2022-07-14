@@ -40,11 +40,26 @@ router.get("/", async (req, res) => {
             delete queryString.showOnlyFollowingPost
         }
     }
+     //let limit = [20];
+    // if(queryString.increaseLimit !== undefined){
+    // let current
+    //  limit.forEach(lim => {
+    //     lim = lim + 10
+    //     limit.push(lim)
+    //  })
+     
+    //  console.log(limit)
+    //  console.log(limit[limit.length-1])
+    //  return
+    //  delete queryString.increaseLimit
+    //  let results = await getPosts(queryString, limit[limit.length-1])
+    //  return res.status(200).send(results)
+    // }
 
     let results = await getPosts(queryString)
     res.status(200).send(results)
 })
-
+ 
 router.get('/:postId', async(req,res) => {
   
     const postId = req.params.postId
@@ -60,7 +75,7 @@ router.get('/:postId', async(req,res) => {
     
     if(postData.replyTo !== undefined && postData.replyTo !== null){
         results.replyTo = postData.replyTo
-    }
+    } 
 
     results.replies = await getPosts({replyTo:postId})
     res.status(200).send(results)    
@@ -238,8 +253,8 @@ async function getPosts(filter){
         .populate('postedBy')
         .populate('sharedData')
         .populate('replyTo')
+        .limit(limit)
         .sort({"createdAt": -1})
-    
         results = await User.populate(results, {path: "sharedData.postedBy"})
         results = await User.populate(results, {path: "replyTo.postedBy"})
         return results

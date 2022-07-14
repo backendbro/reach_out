@@ -841,7 +841,10 @@ function outputPosts(results, container) {
         container.append(html);
     });
 
+    //$(".load-more-btn").css({"display":"block"})
+
     if (results.length == 0) {
+        //$(".load-more-btn").css({"display":"none"})
         container.append("<span class='noResults'>Nothing to show.</span>")
     }
 }
@@ -867,6 +870,14 @@ function outputPostWithReply(results, container){
 //////////// ========== CREATING AND OUTPUTTING POST HTML END ======== /////////////
 
 
+
+// $(".load-more-btn").click(() => {
+//     $.get(`/api/posts`, {increaseLimit:true} , postData => {
+//          outputPosts(postData, $(".postsContainer"))
+//         // console.log(postData)
+//         //location.reload()
+//     })
+// })
 
 //////////// ========== CREATING AND OUTPUTTING USER HTML BEGIN ======== /////////////
 function outputUsers(results, container){

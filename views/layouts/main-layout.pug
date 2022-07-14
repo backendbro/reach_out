@@ -13,7 +13,6 @@ html(lang="en")
     body 
         script. 
             const userLoggedIn=!{userLoggedInJs}
-            const active = '!{active}'
         .wrapper 
             .row 
                 nav.col-2
@@ -40,9 +39,9 @@ html(lang="en")
                     .titleContainer 
                         h1 #{pageTitle}
                         block headerButton
-                    
+                     
                     block content
-
+                    button.load-more-btn(type='button') Load More   
                 div.d-none.d-md-block.col-md-2.col-lg-3
         #notificationList
 

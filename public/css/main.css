@@ -38,10 +38,6 @@
         top: 10%;
         margin-left: 10px;
     } 
-
-    /* .postContentContainer{
-        margin-bottom: -20px;
-    } */
 }
 
 html, body {
@@ -1173,4 +1169,17 @@ ul,li{
     margin-bottom: -10px;
     margin-left: 30px;
     margin-top: 5px;
+}
+
+.load-more-btn{
+	display: none;
+	margin:auto;
+    margin-bottom: 8px;
+    margin-top: 8px;
+	cursor: pointer;
+	padding:5px 10px;
+	border:1px solid blue;
+	color:black;
+	background:transparent;
+	border-radius: 4px;
 }
