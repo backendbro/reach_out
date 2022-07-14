@@ -31,16 +31,16 @@ router.get('/:chatId', async (req,res) => {
     const payload = {
         pageTitle:'New chat',
         userLoggedIn:req.session.user,
-        userLoggedInJs:JSON.stringeify(req.session.user)
+        userLoggedInJs:JSON.stringify(req.session.user)
     }
 
     if(!isValid){
         payload.errorMessage = `Chat does not exist or you are not permitted to view this page`
         return res.status(200).render('chatPage', payload)
     }
-    let chat;
+    let chat
     try {
-        chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
+         chat = await Chat.findOne({_id:chatId, users:{$elemMatch:{$eq:userId}}})
         .populate('users')
     
     
