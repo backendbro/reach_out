@@ -5,7 +5,10 @@ let Message = require('../../schemas/MessageSchema')
 
 
 router.get('/', async (req,res) => {
-   
+    let userId;
+    if(req.session.user !== null){
+         userId = req.session.user._id
+    }
     const searchQuery = {users:{ $elemMatch:{$eq: req.session.user._id } }}
     if(!searchQuery){
         return res.sendStatus(404)
